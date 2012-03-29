@@ -1,0 +1,6 @@
+venv
+PointsBoard/settings_local.py
+
+*.pyc
+*.log
+*.pot
