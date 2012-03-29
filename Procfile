@@ -1,1 +1,1 @@
-web: python PointsBoard/manage.py runserver
+web: python PointsBoard/manage.py runserver $PORT
