@@ -1,4 +1,5 @@
 # Django settings for PointsBoard project.
+# trivial change for staging
 import os
 
 #Debug for now, but this should be turned off whenever we expose the live site to others
