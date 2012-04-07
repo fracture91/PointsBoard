@@ -1,4 +1,6 @@
 venv
+.project
+.pydevproject
 PointsBoard/settings_local.py
 
 *.pyc
