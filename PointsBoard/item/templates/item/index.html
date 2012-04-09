@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<title>index</title>
+	</head>
+	<body>
+		{% if item_list %}
+			<ul>
+			{% for item in item_list %}
+				<li>Item {{item.id}} made at {{item.creation_date}}</li>
+			{% endfor %}
+			</ul>
+		{% else %}
+			<p>No items are available.</p>
+		{% endif %}
+		<form method="post">
+			<input type="submit" value="Add item">
+			{% csrf_token %}
+		</form>
+	</body>
+</html>

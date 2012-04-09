@@ -114,6 +114,8 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
+    # http://david.feinzeig.com/blog/2012/02/17/a-better-way-to-set-your-django-template-directory-setting-dynamically/
+	os.path.join(os.path.dirname(__file__), "item", "templates").replace('\\','/'),
 )
 
 INSTALLED_APPS = (
@@ -123,6 +125,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'PointsBoard.item',
     # Uncomment the next line to enable the admin:
     # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:

@@ -5,6 +5,7 @@ from django.conf.urls.defaults import patterns, include, url
 # admin.autodiscover()
 
 urlpatterns = patterns('',
+	url(r'^$', 'PointsBoard.item.views.index')
     # Examples:
     # url(r'^$', 'PointsBoard.views.home', name='home'),
     # url(r'^PointsBoard/', include('PointsBoard.foo.urls')),
