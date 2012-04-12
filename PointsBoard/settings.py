@@ -110,10 +110,16 @@ MIDDLEWARE_CLASSES = (
 
 ROOT_URLCONF = 'PointsBoard.urls'
 
+def relpath(*args):
+	# http://david.feinzeig.com/blog/2012/02/17/a-better-way-to-set-your-django-template-directory-setting-dynamically/
+	return os.path.join(os.path.dirname(__file__), *args).replace('\\','/')
+
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
+	relpath("points", "templates"),
+	relpath("templates"),
 )
 
 INSTALLED_APPS = (
@@ -123,6 +129,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'PointsBoard.points'
     # Uncomment the next line to enable the admin:
     # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
