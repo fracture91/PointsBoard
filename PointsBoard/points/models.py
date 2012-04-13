@@ -30,7 +30,7 @@ class Board(models.Model):
 	owner = models.ForeignKey(User, related_name="owned_boards")
 	# the join table created here makes sure User and Board are unique_together
 	participants = models.ManyToManyField(User, related_name="participating_boards",
-										blank=True, db_table="participates_in")
+										blank=True, db_table="points_participates_in")
 	creation_date = models.DateTimeField()
 	class Meta:
 		unique_together = ("name", "owner") # just for the owner's sanity
@@ -44,13 +44,14 @@ class Category(models.Model):
 class Cell(models.Model):
 	category = models.ForeignKey(Category)
 	user = models.ForeignKey(User)
+	points = models.IntegerField(default=0)
 	class Meta:
 		unique_together = ("category", "user")
 
 class Transaction(models.Model):
 	board = models.ForeignKey(Board)
 	category = models.ForeignKey(Category)
-	value = models.IntegerField()
+	points = models.IntegerField()
 	reason = models.CharField(max_length=256)
 	recipient = models.ForeignKey(User, related_name="received_transactions")
 	giver = models.ForeignKey(User, related_name="given_transactions")
