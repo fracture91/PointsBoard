@@ -25,6 +25,11 @@ python PointsBoard\manage.py syncdb
 """
 
 class Board(models.Model):
+	"""
+	A points board with a name, optional description, and owner.
+	participants does not necessarily include the owner.
+	An owner cannot own two boards with the same name.
+	"""
 	name = models.CharField(max_length=64)
 	description = models.CharField(max_length=512, blank=True)
 	owner = models.ForeignKey(User, related_name="owned_boards")
@@ -36,12 +41,17 @@ class Board(models.Model):
 		unique_together = ("name", "owner") # just for the owner's sanity
 
 class Category(models.Model):
+	"""A unique category of points on a board, e.g. "Hipster" or "Paragon"."""
 	board = models.ForeignKey(Board)
 	name = models.CharField(max_length=32)
 	class Meta:
 		unique_together = ("board", "name")
 
 class Cell(models.Model):
+	"""
+	A cell in a board.
+	Holds the number of points the user has in the given category.
+	"""
 	category = models.ForeignKey(Category)
 	user = models.ForeignKey(User)
 	points = models.IntegerField(default=0)
@@ -49,6 +59,10 @@ class Cell(models.Model):
 		unique_together = ("category", "user")
 
 class Transaction(models.Model):
+	"""
+	A transaction of points between two users on a board (not necessarily unique).
+	The giver can supply a reason for the transaction, e.g. "for liking Josef K".
+	"""
 	board = models.ForeignKey(Board)
 	category = models.ForeignKey(Category)
 	points = models.IntegerField()
