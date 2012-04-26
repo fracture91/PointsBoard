@@ -1,0 +1,11 @@
+{% extends "points/base.html" %}
+
+{# The main board page containing the board itself, some transactions, owner controls, etc. #}
+
+{% block content %}
+	Board page
+	
+	{% include "points/transaction.html" %}
+	{# You'll include some transactions in a loop #}
+	{# You'll probably need to specify additional context in this include #}
+{% endblock %}

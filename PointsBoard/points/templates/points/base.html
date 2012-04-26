@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{# Defines what should show up on every page in the points app (header thing, common styling, etc.) #}
+
+{% block head %}
+	{{ block.super }}
+	
+{% endblock %}
+
+{% block body %}
+	{{ block.super }}
+	
+	{% block content %}{% endblock %}
+	
+{% endblock %}
