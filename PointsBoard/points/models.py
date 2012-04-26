@@ -37,6 +37,8 @@ class Board(models.Model):
 	participants = models.ManyToManyField(User, related_name="participating_boards",
 										blank=True, db_table="points_participates_in")
 	creation_date = models.DateTimeField()
+	def __unicode__(self):
+		return self.owner.username + "/" + self.name + "." + unicode(self.id)
 	class Meta:
 		unique_together = ("name", "owner") # just for the owner's sanity
 
@@ -44,6 +46,8 @@ class Category(models.Model):
 	"""A unique category of points on a board, e.g. "Hipster" or "Paragon"."""
 	board = models.ForeignKey(Board)
 	name = models.CharField(max_length=32)
+	def __unicode__(self):
+		return unicode(self.board) + "/" + self.name + "." + unicode(self.id)
 	class Meta:
 		unique_together = ("board", "name")
 
@@ -55,6 +59,9 @@ class Cell(models.Model):
 	category = models.ForeignKey(Category)
 	user = models.ForeignKey(User)
 	points = models.IntegerField(default=0)
+	def __unicode__(self):
+		return unicode(self.category) + "/" + self.user.username + ":" +\
+			unicode(self.points) + "." + unicode(self.id)
 	class Meta:
 		unique_together = ("category", "user")
 
@@ -70,3 +77,6 @@ class Transaction(models.Model):
 	recipient = models.ForeignKey(User, related_name="received_transactions")
 	giver = models.ForeignKey(User, related_name="given_transactions")
 	creation_date = models.DateTimeField()
+	def __unicode__(self):
+		return unicode(self.board) + " " + unicode(self.giver) + " " +\
+			unicode(self.points) + " " + self.category.name + " -> " + unicode(self.recipient)
