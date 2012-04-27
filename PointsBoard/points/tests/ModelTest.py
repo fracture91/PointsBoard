@@ -15,10 +15,10 @@ class ModelTest(TestCase):
 		self.renegade = Category.objects.create(name="Renegade", board=self.board)
 	
 	def tearDown(self):
-		toDelete = ["board", "testman", "testboy", "paragon", "renegade"]
+		self.board.participants.clear()
+		toDelete = [Board, User, Category, Cell, Transaction]
 		for model in toDelete:
-			getattr(self, model).delete()
-			setattr(self, model, None)
+			model.objects.all().delete()
 			
 	def testBoardDefinition(self):
 		self.assertEqual(self.board.name, "test board")
@@ -38,4 +38,19 @@ class ModelTest(TestCase):
 		
 		self.assertEqual(self.board.category_set.get(name="Paragon"), self.paragon)
 		self.assertEqual(self.board.category_set.get(name="Renegade"), self.renegade)
-	
+		
+	def testBoardCells(self):
+		# cells should have been created automatically
+		self.assertEqual(self.paragon.cell_set.get(user=self.testman).points, 0)
+		self.assertEqual(self.paragon.cell_set.get(user=self.testboy).points, 0)
+		self.assertEqual(self.renegade.cell_set.get(user=self.testman).points, 0)
+		self.assertEqual(self.renegade.cell_set.get(user=self.testboy).points, 0)
+		
+	def testAddUserCells(self):
+		user = User.objects.create_user("newuser", "example@example.com", "password")
+		self.board.participants.add(user)
+		self.assertEqual(self.board.participants.get(username="newuser"), user)
+		self.assertEqual(self.paragon.cell_set.get(user=user).points, 0)
+		self.assertEqual(self.renegade.cell_set.get(user=user).points, 0)
+		self.assertEqual(self.paragon.cell_set.count(), 3)
+		self.assertEqual(self.renegade.cell_set.count(), 3)
