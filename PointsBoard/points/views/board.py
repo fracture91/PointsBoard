@@ -2,10 +2,7 @@ from django.template import RequestContext, loader
 from django.template.loader import render_to_string
 from django.http import HttpResponse
 from django.contrib.auth.models import User
-from PointsBoard.points.models import Board
-from PointsBoard.points.models import Transaction
-from PointsBoard.points.models import Category
-from PointsBoard.points.models import Cell
+from points.models import Board, Transaction, Category, Cell
 
 """
 Get string containing HTML representation of all transactions for given board
@@ -14,7 +11,8 @@ def getTransStr(request, boardId):
 	transactions = Transaction.objects.filter(board=boardId)
 	alltrans = []
 	for t in transactions:
-		alltrans.append(render_to_string('points/transaction.html', {"transaction": t}, RequestContext(request)))
+		alltrans.append(
+					render_to_string('points/transaction.html', {"transaction": t}, RequestContext(request)))
 	return "\n".join(alltrans)
 
 """
@@ -50,7 +48,8 @@ def board(request, boardId):
 		cats = getCats(boardId)
 		cells = getCells(boardId)
 		
-		context = RequestContext(request, {"board":board, "transactions":transactions, "cats":cats, "cells":cells})
+		context = RequestContext(request,
+								{"board":board, "transactions":transactions, "cats":cats, "cells":cells})
 		return HttpResponse(template.render(context))
 	elif request.method == 'POST':
 		#change description
@@ -60,8 +59,8 @@ def board(request, boardId):
 				#ensure current user is board owner
 				if board.owner.id == request.user.id:
 					board.description = request.POST["newDescription"]
-					#validate board data
-					#save board
+					board.full_clean()
+					board.save()
 		#add new category
 		elif request.POST.has_key("categoryName"):
 			if request.user.is_authenticated():
@@ -69,9 +68,9 @@ def board(request, boardId):
 				#ensure current user is board owner
 				if board.owner.id == request.user.id:
 					newcatname = request.POST["categoryName"]
-					Category(board=board, name=newcatname)
-					#validate category data
-					#save category
+					newcat = Category(board=board, name=newcatname)
+					newcat.full_clean()
+					newcat.save()
 		#add new user
 		elif request.POST.has_key("userName"):
 			if request.user.is_authenticated():
@@ -82,23 +81,9 @@ def board(request, boardId):
 					try:
 						userToAdd = User.objects.get(username__exact=userNameToAdd)
 					except User.DoesNotExist:
-						#TODO: error message
-						return HttpResponse()
+						return HttpResponse("That user does not exist.")
 					board.participants.add(userToAdd)
-					#validate board data
-					#save board
-		#new transaction
-		elif request.POST.has_key("action"):
-			if request.user.is_authenticated():
-				board = Board.objects.get(pk=boardId)
-				points = int(request.POST["numPts"])
-				if request.POST["action"] == "give":
-					points = abs(points)
-				elif request.POST["action"] == "remove":
-					points = abs(points) * -1;
-				if points == 0:
-					return HttpResponse("Please enter a nonzero number of points.")
-				request.POST["category"]
-				request.POST["rcvUser"]
+					board.full_clean()
+					board.save()
 		
 		return HttpResponse()
