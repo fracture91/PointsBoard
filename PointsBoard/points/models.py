@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.dispatch import receiver
 from django.db.models.signals import m2m_changed, post_save
+from django.core.exceptions import ValidationError
 
 """
 Django doesn't support primary keys with multiple columns :(
@@ -39,6 +40,12 @@ class Board(models.Model):
 	participants = models.ManyToManyField(User, related_name="participating_boards",
 										blank=True, db_table="points_participates_in")
 	creation_date = models.DateTimeField()
+	def isUserParticipating(self, user):
+		try:
+			self.participants.get(pk=user.pk)
+			return True
+		except User.DoesNotExist:
+			return False
 	def __unicode__(self):
 		return self.owner.username + "/" + self.name + "." + unicode(self.id)
 	class Meta:
@@ -96,6 +103,11 @@ class Transaction(models.Model):
 	recipient = models.ForeignKey(User, related_name="received_transactions")
 	giver = models.ForeignKey(User, related_name="given_transactions")
 	creation_date = models.DateTimeField()
+	def clean(self):
+		if not self.board.isUserParticipating(self.recipient):
+			raise ValidationError("Recipient is not a Board participant")
+		if not self.board.isUserParticipating(self.giver):
+			raise ValidationError("Giver is not a Board participant")
 	def __unicode__(self):
 		return unicode(self.board) + " " + unicode(self.giver) + " " +\
 			unicode(self.points) + " " + self.category.name + " -> " + unicode(self.recipient)

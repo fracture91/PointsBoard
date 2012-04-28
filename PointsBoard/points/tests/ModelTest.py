@@ -1,10 +1,13 @@
 from django.test import TestCase
+from django.core.exceptions import ValidationError, NON_FIELD_ERRORS
 from points.models import Board, Category, Cell, Transaction
 from django.contrib.auth.admin import User
 from datetime import datetime
 
 class ModelTest(TestCase):
 	def setUp(self):
+		# outsider doesn't participate in the board
+		self.outsider = User.objects.create_user("outsider", "example@example.com", "password")
 		self.testman = User.objects.create_user("testman", "example@example.com", "password")
 		self.testboy = User.objects.create_user("testboy", "example@example.com", "password")
 		self.board = Board(name="test board", description="This is a test board", owner=self.testman,
@@ -67,3 +70,38 @@ class ModelTest(TestCase):
 		# make sure saving again doesn't add another point
 		trans.save()
 		self.assertEqual(self.paragon.cell_set.get(user=self.testboy).points, 1)
+		
+	def testDuplicateCategory(self):
+		with self.assertRaises(ValidationError):
+			dupe = Category(name="Paragon", board=self.board)
+			dupe.full_clean()
+		
+	def testDuplicateBoard(self):
+		with self.assertRaises(ValidationError):
+			# cannot own two boards with the same name
+			dupe = Board(name="test board", description="This is a duplicate test board", owner=self.testman,
+						creation_date=datetime.now())
+			dupe.full_clean()
+		
+	def testBoardSameNameDifferentOwner(self):
+		dupe = Board(name="test board", description="This is a test board", owner=self.testboy,
+						creation_date=datetime.now())
+		dupe.full_clean() # shouldn't raise an exception
+		
+	def testDuplicateParticipant(self):
+		# fails silently
+		self.board.participants.add(self.testman)
+		self.assertEqual(self.board.participants.count(), 2) # testman and testboy
+		
+	def testTransactionParticipation(self):
+		trans = Transaction(board=self.board, category=self.paragon, points=1,
+							reason="no reason", recipient=self.testboy, giver=self.testman,
+							creation_date=datetime.now())
+		trans.full_clean() # this is okay
+		with self.assertRaises(ValidationError):
+			trans.recipient = self.outsider
+			trans.full_clean()
+		trans.recipient = self.testboy
+		with self.assertRaises(ValidationError):
+			trans.giver = self.outsider
+			trans.full_clean()
