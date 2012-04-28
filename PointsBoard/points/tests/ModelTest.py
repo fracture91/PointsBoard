@@ -70,6 +70,10 @@ class ModelTest(TestCase):
 		# make sure saving again doesn't add another point
 		trans.save()
 		self.assertEqual(self.paragon.cell_set.get(user=self.testboy).points, 1)
+		# make sure deleting removes the point
+		trans.delete()
+		self.assertEqual(self.paragon.cell_set.get(user=self.testboy).points, 0)
+		# won't be able to delete a second time, so don't worry about it
 		
 	def testDuplicateCategory(self):
 		with self.assertRaises(ValidationError):

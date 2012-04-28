@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.dispatch import receiver
-from django.db.models.signals import m2m_changed, post_save
+from django.db.models.signals import m2m_changed, post_save, post_delete
 from django.core.exceptions import ValidationError
 
 """
@@ -119,3 +119,13 @@ def onTransactionSave(sender, instance, created, raw, **kwargs):
 		cell = instance.category.cell_set.get(user=instance.recipient)
 		cell.points += instance.points
 		cell.save()
+
+@receiver(post_delete, sender=Transaction)
+def onTransactionDelete(sender, instance, **kwargs):
+	"""
+	Remove the transaction's points from the appropriate cell when deleted.
+	Intended for when a board owner "reverses" a transaction (which deletes it).
+	"""
+	cell = instance.category.cell_set.get(user=instance.recipient)
+	cell.points -= instance.points
+	cell.save()
