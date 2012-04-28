@@ -54,3 +54,16 @@ class ModelTest(TestCase):
 		self.assertEqual(self.renegade.cell_set.get(user=user).points, 0)
 		self.assertEqual(self.paragon.cell_set.count(), 3)
 		self.assertEqual(self.renegade.cell_set.count(), 3)
+		
+	def testTransaction(self):
+		trans = Transaction.objects.create(board=self.board, category=self.paragon, points=1,
+					reason="no reason", recipient=self.testboy, giver=self.testman,
+					creation_date=datetime.now())
+		# make sure the point is added to the cell automatically, but others remain the same
+		self.assertEqual(self.paragon.cell_set.get(user=self.testman).points, 0)
+		self.assertEqual(self.paragon.cell_set.get(user=self.testboy).points, 1)
+		self.assertEqual(self.renegade.cell_set.get(user=self.testman).points, 0)
+		self.assertEqual(self.renegade.cell_set.get(user=self.testboy).points, 0)
+		# make sure saving again doesn't add another point
+		trans.save()
+		self.assertEqual(self.paragon.cell_set.get(user=self.testboy).points, 1)

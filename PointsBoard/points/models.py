@@ -99,3 +99,11 @@ class Transaction(models.Model):
 	def __unicode__(self):
 		return unicode(self.board) + " " + unicode(self.giver) + " " +\
 			unicode(self.points) + " " + self.category.name + " -> " + unicode(self.recipient)
+
+@receiver(post_save, sender=Transaction)
+def onTransactionSave(sender, instance, created, raw, **kwargs):
+	"""Add the transaction's points to the appropriate cell when created"""
+	if created:
+		cell = instance.category.cell_set.get(user=instance.recipient)
+		cell.points += instance.points
+		cell.save()
