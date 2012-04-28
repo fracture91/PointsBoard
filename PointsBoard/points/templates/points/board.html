@@ -2,10 +2,58 @@
 
 {# The main board page containing the board itself, some transactions, owner controls, etc. #}
 
+{% block title %}
+	{{ board.name }}
+{% endblock %}
+
 {% block content %}
 	Board page
+	<p>
+		{{ board.description }}
+	</p>
+	{% if user.is_authenticated and user.id == board.owner.id %}
+		<form method="post" action="/boards/{{ board.id }}">
+			<input type="text" name="newDescription" value="{{ board.description }}"/>
+			<input type="submit" value="Edit Description" />
+		</form>
+		<form method="post" action="/boards/{{ board.id }}">
+			<input type="text" name="categoryName" />
+			<input type="submit" value="Add Category" />
+		</form>
+		<form method="post" action="/boards/{{ board.id }}">
+			<input type="text" name="userName" />
+			<input type="submit" value="Add User" />
+		</form>
+		
+	{% endif %}
+	<table id="board">
+		<thead>
+			<tr>
+				<th>User</th>
+				{% for category in cats %}
+				<th>{{ category }}</th>
+				{% endfor %}
+			</tr>
+		</thead>
+		<tbody>
+			{% for user, userCells in cells.items %}
+			<tr>
+				<td>
+					{{ user }}
+				</td>
+				{% for category, cell in userCells.items %}
+				<td>
+					{{ cell.points }}
+				</td>
+				{% endfor %}
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
 	
-	{% include "points/transaction.html" %}
-	{# You'll include some transactions in a loop #}
-	{# You'll probably need to specify additional context in this include #}
+	<div id="transactioncontainer">
+		{% autoescape off %}
+		{{ transactions }}
+		{% endautoescape %}
+	</div>
 {% endblock %}
