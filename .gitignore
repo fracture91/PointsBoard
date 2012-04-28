@@ -6,3 +6,4 @@ PointsBoard/settings_local.py
 *.pyc
 *.log
 *.pot
+.DS_Store
