@@ -13,14 +13,17 @@
 	</p>
 	{% if user.is_authenticated and user.id == board.owner.id %}
 		<form method="post" action="/boards/{{ board.id }}">
+			{% csrf_token %}
 			<input type="text" name="newDescription" value="{{ board.description }}"/>
 			<input type="submit" value="Edit Description" />
 		</form>
 		<form method="post" action="/boards/{{ board.id }}">
+			{% csrf_token %}
 			<input type="text" name="categoryName" />
 			<input type="submit" value="Add Category" />
 		</form>
 		<form method="post" action="/boards/{{ board.id }}">
+			{% csrf_token %}
 			<input type="text" name="userName" />
 			<input type="submit" value="Add User" />
 		</form>
@@ -36,10 +39,10 @@
 			</tr>
 		</thead>
 		<tbody>
-			{% for user, userCells in cells.items %}
+			{% for username, userCells in cells.items %}
 			<tr>
 				<td>
-					{{ user }}
+					{{ username }}
 				</td>
 				{% for category, cell in userCells.items %}
 				<td>
@@ -55,5 +58,36 @@
 		{% autoescape off %}
 		{{ transactions }}
 		{% endautoescape %}
+		<div id="newtransaction">
+			<form method="post" action="/boards/{{ board.id }}/transactions">
+				{% csrf_token %}
+				<p>
+					I want to
+					<select name="action">
+						<option>give</option>
+						<option>remove</option>
+					</select>
+					<input type="number" name="numPts" size="2"/>
+					<select name="category">
+						{% for category in cats %}
+						<option>{{ category }}</option>
+						{% endfor %}
+					</select>
+					points to/from
+					<select name="rcvUser">
+						{% for username, userCells in cells.items %}
+							{% if username != user.username %}
+								<option>{{ username }}</option>
+							{% endif %}
+						{% endfor %}
+					</select>
+				</p>
+				<p>
+					Reason:
+					<input type="text" name="reason" />
+					<input type="submit" value="Submit" />
+				</p>
+			</form>
+		</div>
 	</div>
 {% endblock %}
