@@ -6,6 +6,8 @@ from datetime import datetime
 
 class ModelTest(TestCase):
 	def setUp(self):
+		# outsider doesn't participate in the board
+		self.outsider = User.objects.create_user("outsider", "example@example.com", "password")
 		self.testman = User.objects.create_user("testman", "example@example.com", "password")
 		self.testboy = User.objects.create_user("testboy", "example@example.com", "password")
 		self.board = Board(name="test board", description="This is a test board", owner=self.testman,
@@ -90,3 +92,16 @@ class ModelTest(TestCase):
 		# fails silently
 		self.board.participants.add(self.testman)
 		self.assertEqual(self.board.participants.count(), 2) # testman and testboy
+		
+	def testTransactionParticipation(self):
+		trans = Transaction(board=self.board, category=self.paragon, points=1,
+							reason="no reason", recipient=self.testboy, giver=self.testman,
+							creation_date=datetime.now())
+		trans.full_clean() # this is okay
+		with self.assertRaises(ValidationError):
+			trans.recipient = self.outsider
+			trans.full_clean()
+		trans.recipient = self.testboy
+		with self.assertRaises(ValidationError):
+			trans.giver = self.outsider
+			trans.full_clean()
