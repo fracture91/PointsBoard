@@ -2,11 +2,61 @@
 
 {# Shows the boards for a user after they log in #}
 
+{% block title %}
+	Your Boards
+{% endblock %}
+
 {% block head %}
 	{{ block.super }}
 	<link rel="stylesheet" href="{{ STATIC_URL }}points/styles/user_boards.css" type="text/css">
 {% endblock %}
 
 {% block content %}
-	User boards page
+	<h1>Your Boards</h1>
+	<section>
+		<h2>Boards You're Part Of:</h2>
+		<ul>
+		{% for board in boards %}
+			<li>
+				<a href="/boards/{{ board.id }}">{{ board.name }}</a> Owned by: <span class="ownername">{{ board.owner.username }}</span>
+			</li>
+		{% empty %}
+			<li>
+				You are not participating in any boards.
+			</li>
+		{% endfor %}
+		</ul>
+	</section>
+	<section>
+		<h2>Boards You Own:</h2>
+		<ul>
+		{% for board in ownedBoards %}
+			<li>
+				<a href="/boards/{{ board.id }}">{{ board.name }}</a>
+			</li>
+		{% empty %}
+			<li>
+				You do not own any boards.
+			</li>
+		{% endfor %}
+		</ul>
+	</section>
+	<form id="new_board" method="post" action="/boards">
+		<fieldset>
+			<legend>
+				Create a new board
+			</legend>
+			<label for="board_title">Board Name:</label>
+			<input type="text" name="board_title" />
+			<br/>
+			<label for="column_num">Number of categories:</label>
+			<input type="number" name="column_num"/>
+			<br/>
+			<!-- Needs to be multiplied based on number of categories input -->
+			<label for="column_name">Category 1:</label>
+			<input type="text" name="column_name" />
+			<br />
+			<input type="submit" value="Create" />
+		</fieldset>
+	</form>
 {% endblock %}
