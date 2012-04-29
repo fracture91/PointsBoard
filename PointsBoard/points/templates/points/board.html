@@ -41,11 +41,11 @@
 		<tbody>
 			{% for username, userCells in cells.items %}
 			<tr>
-				<td>
+				<td class="username">
 					{{ username }}
 				</td>
 				{% for category, cell in userCells.items %}
-				<td>
+				<td class="points">
 					{{ cell.points }}
 				</td>
 				{% endfor %}
@@ -55,9 +55,6 @@
 	</table>
 	
 	<div id="transactioncontainer">
-		{% autoescape off %}
-		{{ transactions }}
-		{% endautoescape %}
 		<div id="newtransaction">
 			<form method="post" action="/boards/{{ board.id }}/transactions">
 				{% csrf_token %}
@@ -89,5 +86,8 @@
 				</p>
 			</form>
 		</div>
+		{% autoescape off %}
+		{{ transactions }}
+		{% endautoescape %}
 	</div>
 {% endblock %}

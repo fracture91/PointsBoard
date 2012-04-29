@@ -3,12 +3,16 @@
 {% load comments %}
 <div class="transaction">
 	<p>
-		{{ transaction.giver.username }} gave {{ transaction.recipient.username }}
-		{{ transaction.points }} {{ transaction.category.name }} points
-		{{ transaction.reason }}
+		<span class="trans_giver">{{ transaction.giver.username }}</span>
+		gave
+		<span class="trans_recipient">{{ transaction.recipient.username }}</span>
+		<span class="trans_numpoints">{{ transaction.points }}</span>
+		<span class="trans_categoryname">{{ transaction.category.name }}</span>
+		points
+		<span class="trans_reason">{{ transaction.reason }}</span>
 	</p>
 	
-	<div class="commentsblock">
+	<div class="trans_commentsblock">
 		{% render_comment_list for transaction %}
 		{% render_comment_form for transaction %}
 	</div>
