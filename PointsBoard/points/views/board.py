@@ -43,9 +43,11 @@ def getCells(boardId):
 
 @login_required
 def board(request, boardId):
-	#ensure current user is board owner
 	board = Board.objects.get(pk=boardId)
+	if not board.isUserAllowedToView(request.user):
+		return HttpResponse(content="You don't have permission to view this board.", status=403)
 	if request.method == 'POST':
+		#ensure current user is board owner
 		if board.owner.id == request.user.id:
 			#change description
 			if request.POST.has_key("newDescription"):
@@ -69,9 +71,7 @@ def board(request, boardId):
 				board.full_clean()
 				board.save()
 			else:
-				response = HttpResponse()
-				response.status_code = 400
-				return response
+				return HttpResponse(status=400)
 	template = loader.get_template('points/board.html')
 	transactions = getTransStr(request, boardId)
 	cats = getCats(boardId)
