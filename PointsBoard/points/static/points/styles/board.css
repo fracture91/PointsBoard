@@ -1,2 +1,5 @@
 /* Rules specific to board.html */
 
+#owner_controls {
+	float: right;
+}
