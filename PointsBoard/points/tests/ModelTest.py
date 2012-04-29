@@ -58,6 +58,13 @@ class ModelTest(TestCase):
 		self.assertEqual(self.paragon.cell_set.count(), 3)
 		self.assertEqual(self.renegade.cell_set.count(), 3)
 		
+	def testIsUserAllowedToView(self):
+		self.assertTrue(self.board.isUserAllowedToView(self.testman))
+		self.assertTrue(self.board.isUserAllowedToView(self.testboy))
+		self.assertFalse(self.board.isUserAllowedToView(self.outsider))
+		self.board.owner = self.outsider #test owner but not participant
+		self.assertTrue(self.board.isUserAllowedToView(self.outsider))
+		
 	def testTransaction(self):
 		trans = Transaction.objects.create(board=self.board, category=self.paragon, points=1,
 					reason="no reason", recipient=self.testboy, giver=self.testman,

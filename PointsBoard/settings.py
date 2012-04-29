@@ -92,6 +92,9 @@ STATICFILES_FINDERS = (
 #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
+LOGIN_URL = "/"
+LOGOUT_URL = "/logout"
+
 # Make this unique, and don't share it with anybody.
 # On the heroku app, read this from the environment variable PB_SECRET_KEY
 # locally, you can use a .env file with foreman or override in settings_local.py

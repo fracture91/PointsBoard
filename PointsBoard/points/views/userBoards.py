@@ -5,7 +5,7 @@ from points.models import Board
 
 @login_required
 def userBoards(request):
-	template = loader.get_template('points/boards.html')
+	template = loader.get_template('points/user_boards.html')
 	userBoards = request.user.participating_boards.all()
 	ownedBoards = request.user.owned_boards.all()
 	context = RequestContext(request, {"boards":userBoards, "ownedBoards":ownedBoards})

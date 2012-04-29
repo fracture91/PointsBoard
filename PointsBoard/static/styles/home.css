@@ -1,2 +1,40 @@
 /* Rules specific to home.html */
 
+body {
+	width: 960px;
+	margin: 0 auto;
+	border: 1px solid #333;
+}
+
+.clear {
+	clear: both;
+}
+
+form {
+	width: 40%;
+	margin: 3em;
+}
+
+h1 {
+	text-align: center;
+}
+
+h2 {
+	text-align: center;
+}
+
+body > p {
+	text-align: center;
+}
+
+#login {
+	float: left;
+	display: inline-block;
+	height: 100%;
+}
+
+#register {
+	float: right;
+	display: inline-block;
+	height: 100%;
+}
