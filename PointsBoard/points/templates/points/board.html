@@ -31,6 +31,11 @@
 				<input type="text" name="userName">
 				<input type="submit" value="Add User">
 			</form>
+			<form method="post" action="{% url board board.id %}">
+				{% csrf_token %}
+				<input type="text" name="userName">
+				<input type="submit" name="removeUser" value="Remove User">
+			</form>
 		</aside>
 	{% endif %}
 	

@@ -62,12 +62,20 @@ def board(request, boardId):
 				newcat.save()
 			#add new user
 			elif request.POST.has_key("userName"):
-				userNameToAdd = request.POST["userName"]
-				try:
-					userToAdd = User.objects.get(username__exact=userNameToAdd)
-				except User.DoesNotExist:
-					return HttpResponse("That user does not exist.")
-				board.participants.add(userToAdd)
+				remove = "removeUser" in request.POST
+				username = request.POST["userName"]
+				if not remove:
+					try:
+						user = User.objects.get(username__exact=username)
+					except User.DoesNotExist:
+						return HttpResponse("That user does not exist.")
+					board.participants.add(user)
+				else :
+					try:
+						user = board.participants.get(username__exact=username)
+					except:
+						return HttpResponse("That user is not a board participant.")
+					board.participants.remove(user)
 				board.full_clean()
 				board.save()
 			else:
