@@ -13,7 +13,7 @@ def getTransStr(request, boardId):
 	alltrans = []
 	for t in transactions:
 		alltrans.append(
-					render_to_string('points/transaction.html', {"transaction": t}, RequestContext(request)))
+					render_to_string('points/transaction.html', {"transaction": t, "boardid": boardId}, RequestContext(request)))
 	return "\n".join(alltrans)
 
 """

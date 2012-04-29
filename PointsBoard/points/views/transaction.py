@@ -10,8 +10,13 @@ def transaction(request, boardId, transactionId=-1):
 	if request.method == 'GET':
 		if transactionId != -1:
 			template = loader.get_template('points/transaction_page.html')
-			transaction = Transaction.objects.get(pk=transactionId)
-			context = RequestContext(request, {"transaction": transaction})
+			try:
+				transaction = Transaction.objects.get(pk=transactionId)
+			except Transaction.DoesNotExist:
+				response = HttpResponse()
+				response.status_code = 404
+				return response
+			context = RequestContext(request, {"transaction": transaction, "boardid": boardId})
 			return HttpResponse(template.render(context))
 		response = HttpResponse()
 		response.status_code = 404

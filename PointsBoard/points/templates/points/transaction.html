@@ -11,7 +11,7 @@
 		points
 		<span class="trans_reason">{{ transaction.reason }}</span>
 	</p>
-	
+	<a class="permalink" href="/boards/{{ boardid }}/transactions/{{ transaction.id }}">Permalink</a>
 	<div class="trans_commentsblock">
 		{% render_comment_list for transaction %}
 		{% render_comment_form for transaction %}
