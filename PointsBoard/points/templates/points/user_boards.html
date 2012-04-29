@@ -13,14 +13,18 @@
 
 {% block content %}
 	<h1>Your Boards</h1>
+	{% if feedback %}
+		<strong>{{ feedback }}</strong>
+	{% endif %}
 	<section class="owned_boards">
 		<header>
 			<form id="new_board" method="post" action="{% url userBoards %}">
+				{% csrf_token %}
 				<fieldset>
 					<legend>Create a new board</legend>
-					<label for="board_title">Board Name:</label>
-					<input type="text" name="board_title" id="board_title">
-					<input type="submit" value="Create">
+					<label for="board_name">Board Name:</label>
+					<input type="text" name="board_name" id="board_name">
+					<input type="submit" name="create" value="Create">
 				</fieldset>
 			</form>
 			<h1>Boards You Own</h1>
