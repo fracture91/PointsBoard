@@ -1,2 +1,44 @@
 /* Rules for the _entire points app_ */
 
+body {
+	margin-top: 0;
+}
+
+.clear {
+	clear: both;
+}
+
+#points_header {
+	background-color: #e3eaef;
+	border: 1px solid #333;
+	border-width: 0 1px 1px;
+	padding: 3px 1em;
+	position: relative; /* So shadow from main goes under */
+	box-shadow: 0 2px 3px rgba(0, 0, 0, 0.2);
+}
+
+#points_header > h1 {
+	font-size: 1em;
+	float: left;
+	margin: 0;
+}
+
+#points_header > nav > ul {
+	list-style-type: none;
+	float: right;
+	margin: -1px 0 0;
+}
+
+#points_header > nav > ul > li {
+	display: inline-block;
+	margin-left: 1em;
+}
+
+#points_main {
+	width: 900px;
+	margin: 0 auto;
+	border: 1px solid #333;
+	border-width: 0 1px 1px;
+	padding: 1em 2em;
+	box-shadow: 0 0 7px #333;
+}
