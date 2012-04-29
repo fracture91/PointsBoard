@@ -33,8 +33,8 @@
 		{% csrf_token %}
 		<fieldset>
 			<legend>New User? Register:</legend>
-			{% if registration_feedback %}
-				<strong>{{ registration_feedback }}</strong>
+			{% if register_feedback %}
+				<strong>{{ register_feedback }}</strong>
 			{% endif %}
 			<p>
 				<label for="username_register">Username:</label>
