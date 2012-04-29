@@ -1,2 +1,28 @@
 /* Rules specific to user_boards.html */
 
+#new_board {
+	float: right;
+}
+
+#points_main section {
+	border: 1px solid #333;
+	margin: 2em 0;
+}
+
+#points_main section > header {
+	background-color: #eee;
+	padding-bottom: 3px;
+}
+
+#points_main section > header > h1 {
+	margin: 0 1em;
+	padding: 21px 0;
+}
+
+#points_main section > ul > li {
+	margin: 1em 0;
+}
+
+#points_main section > ul > li > p {
+	margin: 0;
+}
