@@ -47,7 +47,7 @@ class Board(models.Model):
 		except User.DoesNotExist:
 			return False
 	def isUserAllowedToView(self, user):
-		return user is self.owner or self.isUserParticipating(user)
+		return user == self.owner or self.isUserParticipating(user)
 	def __unicode__(self):
 		return self.owner.username + "/" + self.name + "." + unicode(self.id)
 	class Meta:
