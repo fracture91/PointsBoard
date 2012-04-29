@@ -8,12 +8,12 @@ from points.models import Board, Transaction, Category, Cell
 """
 Get string containing HTML representation of all transactions for given board
 """
-def getTransStr(request, boardId):
-	transactions = Transaction.objects.filter(board=boardId)
+def getTransStr(request, board):
+	transactions = Transaction.objects.filter(board=board.id)
 	alltrans = []
 	for t in transactions:
 		alltrans.append(
-					render_to_string('points/transaction.html', {"transaction": t, "boardid": boardId}, RequestContext(request)))
+					render_to_string('points/transaction.html', {"transaction": t, "board": board}, RequestContext(request)))
 	return "\n".join(alltrans)
 
 """
@@ -73,7 +73,7 @@ def board(request, boardId):
 			else:
 				return HttpResponse(status=400)
 	template = loader.get_template('points/board.html')
-	transactions = getTransStr(request, boardId)
+	transactions = getTransStr(request, board)
 	cats = getCats(boardId)
 	cells = getCells(boardId)
 	

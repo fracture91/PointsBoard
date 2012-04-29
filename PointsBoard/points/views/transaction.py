@@ -17,16 +17,17 @@ def transaction(request, boardId, transactionId=-1):
 			try:
 				transaction = Transaction.objects.get(pk=transactionId)
 			except Transaction.DoesNotExist:
-				response = HttpResponse()
-				response.status_code = 404
-				return response
-			context = RequestContext(request, {"transaction": transaction, "boardid": boardId})
+				return HttpResponse(status=404)
+			context = RequestContext(request, {"transaction": transaction, "board": board})
 			return HttpResponse(template.render(context))
 		return HttpResponse(status=405)
 	elif request.method == 'POST':
 		#new transaction
 		if request.POST.has_key("action"):
-			points = int(request.POST["numPts"])
+			try:
+				points = int(request.POST["numPts"])
+			except ValueError: #it looks like the default value is 1 on the form, so treat no value as a 1
+				points = 1
 			if request.POST["action"] == "give":
 				points = abs(points)
 			elif request.POST["action"] == "remove":
@@ -39,6 +40,15 @@ def transaction(request, boardId, transactionId=-1):
 					recipient=rcvUser, giver=request.user, creation_date=datetime.datetime.now())
 			trans.full_clean()
 			trans.save()
+		elif request.POST.has_key("delete"):
+			if request.user != board.owner:
+				return HttpResponse(content="You don't have permission to delete transactions on this board.",
+								status=403)
+			try:
+				todel = Transaction.objects.get(pk=transactionId)
+			except Transaction.DoesNotExist:
+				return HttpResponse(status=404)
+			todel.delete()
 		response = HttpResponse()
 		response['Refresh'] = "0; url=/boards/"+str(boardId)
 		return response
