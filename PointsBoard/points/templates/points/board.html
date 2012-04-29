@@ -2,10 +2,92 @@
 
 {# The main board page containing the board itself, some transactions, owner controls, etc. #}
 
+{% block title %}
+	{{ board.name }}
+{% endblock %}
+
 {% block content %}
 	Board page
+	<p>
+		{{ board.description }}
+	</p>
+	{% if user.is_authenticated and user.id == board.owner.id %}
+		<form method="post" action="/boards/{{ board.id }}">
+			{% csrf_token %}
+			<input type="text" name="newDescription" value="{{ board.description }}"/>
+			<input type="submit" value="Edit Description" />
+		</form>
+		<form method="post" action="/boards/{{ board.id }}">
+			{% csrf_token %}
+			<input type="text" name="categoryName" />
+			<input type="submit" value="Add Category" />
+		</form>
+		<form method="post" action="/boards/{{ board.id }}">
+			{% csrf_token %}
+			<input type="text" name="userName" />
+			<input type="submit" value="Add User" />
+		</form>
+		
+	{% endif %}
+	<table id="board">
+		<thead>
+			<tr>
+				<th>User</th>
+				{% for category in cats %}
+				<th>{{ category }}</th>
+				{% endfor %}
+			</tr>
+		</thead>
+		<tbody>
+			{% for username, userCells in cells.items %}
+			<tr>
+				<td class="username">
+					{{ username }}
+				</td>
+				{% for category, cell in userCells.items %}
+				<td class="points">
+					{{ cell.points }}
+				</td>
+				{% endfor %}
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
 	
-	{% include "points/transaction.html" %}
-	{# You'll include some transactions in a loop #}
-	{# You'll probably need to specify additional context in this include #}
+	<div id="transactioncontainer">
+		<div id="newtransaction">
+			<form method="post" action="/boards/{{ board.id }}/transactions">
+				{% csrf_token %}
+				<p>
+					I want to
+					<select name="action">
+						<option>give</option>
+						<option>remove</option>
+					</select>
+					<input type="number" name="numPts" size="2"/>
+					<select name="category">
+						{% for category in cats %}
+						<option>{{ category }}</option>
+						{% endfor %}
+					</select>
+					points to/from
+					<select name="rcvUser">
+						{% for username, userCells in cells.items %}
+							{% if username != user.username %}
+								<option>{{ username }}</option>
+							{% endif %}
+						{% endfor %}
+					</select>
+				</p>
+				<p>
+					Reason:
+					<input type="text" name="reason" />
+					<input type="submit" value="Submit" />
+				</p>
+			</form>
+		</div>
+		{% autoescape off %}
+		{{ transactions }}
+		{% endautoescape %}
+	</div>
 {% endblock %}

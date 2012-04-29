@@ -1,5 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.dispatch import receiver
+from django.db.models.signals import m2m_changed, post_save, post_delete
+from django.core.exceptions import ValidationError
 
 """
 Django doesn't support primary keys with multiple columns :(
@@ -37,10 +40,24 @@ class Board(models.Model):
 	participants = models.ManyToManyField(User, related_name="participating_boards",
 										blank=True, db_table="points_participates_in")
 	creation_date = models.DateTimeField()
+	def isUserParticipating(self, user):
+		try:
+			self.participants.get(pk=user.pk)
+			return True
+		except User.DoesNotExist:
+			return False
 	def __unicode__(self):
 		return self.owner.username + "/" + self.name + "." + unicode(self.id)
 	class Meta:
 		unique_together = ("name", "owner") # just for the owner's sanity
+		
+@receiver(m2m_changed, sender=Board.participants.through)
+def onParticipantsChange(sender, instance, action, reverse, model, pk_set, **kwargs):
+	"""Make sure that the changed board has the necessary cells for new participants."""
+	if action == "post_add":
+		for pk in pk_set: # each new user
+			for category in instance.category_set.all(): # each category in this board
+				Cell.objects.get_or_create(category=category, user=model.objects.get(id=pk))
 
 class Category(models.Model):
 	"""A unique category of points on a board, e.g. "Hipster" or "Paragon"."""
@@ -50,6 +67,15 @@ class Category(models.Model):
 		return unicode(self.board) + "/" + self.name + "." + unicode(self.id)
 	class Meta:
 		unique_together = ("board", "name")
+	
+@receiver(post_save, sender=Category)
+def onCategorySave(sender, instance, created, raw, **kwargs):
+	"""
+	Make sure that the category's board has the necessary cells for this category.
+	Checks even if category isn't new.
+	"""
+	for user in instance.board.participants.all():
+			Cell.objects.get_or_create(category=instance, user=user)
 
 class Cell(models.Model):
 	"""
@@ -77,6 +103,29 @@ class Transaction(models.Model):
 	recipient = models.ForeignKey(User, related_name="received_transactions")
 	giver = models.ForeignKey(User, related_name="given_transactions")
 	creation_date = models.DateTimeField()
+	def clean(self):
+		if not self.board.isUserParticipating(self.recipient):
+			raise ValidationError("Recipient is not a Board participant")
+		if not self.board.isUserParticipating(self.giver):
+			raise ValidationError("Giver is not a Board participant")
 	def __unicode__(self):
 		return unicode(self.board) + " " + unicode(self.giver) + " " +\
 			unicode(self.points) + " " + self.category.name + " -> " + unicode(self.recipient)
+
+@receiver(post_save, sender=Transaction)
+def onTransactionSave(sender, instance, created, raw, **kwargs):
+	"""Add the transaction's points to the appropriate cell when created"""
+	if created:
+		cell = instance.category.cell_set.get(user=instance.recipient)
+		cell.points += instance.points
+		cell.save()
+
+@receiver(post_delete, sender=Transaction)
+def onTransactionDelete(sender, instance, **kwargs):
+	"""
+	Remove the transaction's points from the appropriate cell when deleted.
+	Intended for when a board owner "reverses" a transaction (which deletes it).
+	"""
+	cell = instance.category.cell_set.get(user=instance.recipient)
+	cell.points -= instance.points
+	cell.save()
