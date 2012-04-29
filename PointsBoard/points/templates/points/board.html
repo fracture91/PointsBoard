@@ -69,18 +69,18 @@
 				{% csrf_token %}
 				<p>
 					I want to
-					<select name="action">
+					<select name="action" id="trans_action">
 						<option>give</option>
 						<option>remove</option>
 					</select>
 					<input type="number" name="numPts" size="2" placeholder="1">
-					<select name="category">
+					<select name="category" id="trans_category">
 						{% for category in cats %}
 						<option>{{ category }}</option>
 						{% endfor %}
 					</select>
 					points to/from
-					<select name="rcvUser">
+					<select name="rcvUser" id="trans_rcvUser">
 						{% for username, userCells in cells.items %}
 							<option>{{ username }}</option>
 						{% endfor %}
