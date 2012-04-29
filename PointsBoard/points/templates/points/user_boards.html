@@ -3,6 +3,7 @@
 {# Shows the boards for a user after they log in #}
 
 {% block head %}
+	{{ block.super }}
 	<link rel="stylesheet" href="{{ STATIC_URL }}points/styles/user_boards.css" type="text/css">
 {% endblock %}
 
