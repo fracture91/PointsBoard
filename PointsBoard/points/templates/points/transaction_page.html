@@ -1,6 +1,11 @@
 {% extends "points/base.html" %}
 {# This is a full page for a single transaction #}
 
+{% block head %}
+	<link rel="stylesheet" href="{{ STATIC_URL }}points/styles/transaction_page.css" type="text/css">
+	<link rel="stylesheet" href="{{ STATIC_URL }}points/styles/transaction.css" type="text/css">
+{% endblock %}
+
 {% block content %}
 	Transaction page
 	

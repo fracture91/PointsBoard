@@ -2,6 +2,10 @@
 
 {# Shows the boards for a user after they log in #}
 
+{% block head %}
+	<link rel="stylesheet" href="{{ STATIC_URL }}points/styles/user_boards.css" type="text/css">
+{% endblock %}
+
 {% block content %}
 	User boards page
 {% endblock %}

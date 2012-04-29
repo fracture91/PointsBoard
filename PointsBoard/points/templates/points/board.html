@@ -6,6 +6,11 @@
 	{{ board.name }}
 {% endblock %}
 
+{% block head %}
+	<link rel="stylesheet" href="{{ STATIC_URL }}points/styles/board.css" type="text/css">
+	<link rel="stylesheet" href="{{ STATIC_URL }}points/styles/transaction.css" type="text/css">
+{% endblock %}
+
 {% block content %}
 	Board page
 	<p>
