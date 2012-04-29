@@ -55,11 +55,17 @@ class Board(models.Model):
 		
 @receiver(m2m_changed, sender=Board.participants.through)
 def onParticipantsChange(sender, instance, action, reverse, model, pk_set, **kwargs):
-	"""Make sure that the changed board has the necessary cells for new participants."""
-	if action == "post_add":
+	"""Make sure that the changed board has the necessary cells for new/removed participants."""
+	if action == "post_add" or action == "post_remove":
 		for pk in pk_set: # each new user
+			user = model.objects.get(pk=pk)
 			for category in instance.category_set.all(): # each category in this board
-				Cell.objects.get_or_create(category=category, user=model.objects.get(id=pk))
+				if action == "post_add":
+					Cell.objects.get_or_create(category=category, user=user)
+				elif action == "post_remove":
+					# This won't get called when users are removed via the admin interface
+					# https://code.djangoproject.com/ticket/16073
+					Cell.objects.get(category=category, user=user).delete()
 
 class Category(models.Model):
 	"""A unique category of points on a board, e.g. "Hipster" or "Paragon"."""

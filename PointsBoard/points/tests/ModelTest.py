@@ -58,6 +58,15 @@ class ModelTest(TestCase):
 		self.assertEqual(self.paragon.cell_set.count(), 3)
 		self.assertEqual(self.renegade.cell_set.count(), 3)
 		
+	def testRemoveUserCells(self):
+		self.board.participants.remove(self.testboy)
+		self.assertEqual(self.paragon.cell_set.get(user=self.testman).points, 0)
+		self.assertEqual(self.renegade.cell_set.get(user=self.testman).points, 0)
+		with self.assertRaises(Cell.DoesNotExist):
+			self.paragon.cell_set.get(user=self.testboy)
+		with self.assertRaises(Cell.DoesNotExist):
+			self.renegade.cell_set.get(user=self.testboy)
+		
 	def testIsUserAllowedToView(self):
 		self.assertTrue(self.board.isUserAllowedToView(self.testman))
 		self.assertTrue(self.board.isUserAllowedToView(self.testboy))
