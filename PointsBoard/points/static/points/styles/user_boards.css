@@ -10,7 +10,7 @@
 }
 
 #points_main section > header {
-	background-color: #eee;
+	background-color: #008257;
 	padding-bottom: 3px;
 }
 
@@ -25,4 +25,8 @@
 
 #points_main section > ul > li > p {
 	margin: 0;
+}
+
+#points_main{
+	background-color: #CCC;
 }
