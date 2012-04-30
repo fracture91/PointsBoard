@@ -1,2 +1,37 @@
 /* Rules specific to any page that can contain transaction.html */
 
+.transaction {
+	background-color: #eee;
+	margin: 1em auto;
+	width: 30em;
+	padding: 1em;
+	border: 1px solid #333;
+}
+
+.transaction .permalink {
+	float: left;
+}
+
+.transaction > form {
+	float: right;
+}
+
+/* Oh god... why */
+.trans_commentsblock div + p,
+.trans_commentsblock div + p + p,
+.trans_commentsblock div + p + p + p {
+	display: none;
+}
+
+.trans_commentsblock textarea {
+    float: left;
+    height: 4em;
+    min-height: 4em;
+    width: 30em;
+    min-width: 30em;
+    max-width: 30em;
+}
+
+.trans_commentsblock label[for="id_comment"] {
+	display: none;
+}
