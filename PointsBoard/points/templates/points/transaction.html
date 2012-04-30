@@ -22,8 +22,14 @@
 	<div class="clear"></div>
 	<h1>Comments</h1>
 	<div class="trans_commentsblock">
-		{% render_comment_list for transaction %}
-		{% render_comment_form for transaction %}
+		{% autoescape off %}
+		{{ comments }}
+		{% endautoescape %}
+		<form class="commentform" method="post" action="{% url transactionComments board.id transaction.id %}">
+			{% csrf_token %}
+			<textarea name="comment"></textarea>
+			<input type="submit" class="commentPostButton" value="Post" />
+		</form>
 		<div class="clear"></div>
 	</div>
 </div>

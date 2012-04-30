@@ -156,7 +156,6 @@ class MinComment(models.Model):
 	submit_date = models.DateTimeField()
 	
 	class Meta:
-		db_table = "django_comments"
 		ordering = ('submit_date',)
 		permissions = [("can_moderate", "Can moderate comments")]
 		verbose_name = "comment"

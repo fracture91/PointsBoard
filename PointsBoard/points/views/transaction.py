@@ -4,6 +4,13 @@ from points.models import Board, Category, Transaction
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 import datetime
+from points.views.comment import getAllComments
+
+def renderSingleTransaction(request, transaction):
+	board = transaction.board
+	template = loader.get_template('points/transaction.html')
+	context = RequestContext(request, {"transaction": transaction, "board": board, "comments":getAllComments(transaction)})
+	return template.render(context)
 
 @login_required
 def transaction(request, boardId, transactionId=-1):
@@ -18,7 +25,7 @@ def transaction(request, boardId, transactionId=-1):
 				transaction = Transaction.objects.get(pk=transactionId)
 			except Transaction.DoesNotExist:
 				return HttpResponse(status=404)
-			context = RequestContext(request, {"transaction": transaction, "board": board})
+			context = RequestContext(request, {"transaction": transaction, "board": board, "comments":getAllComments(transaction)})
 			return HttpResponse(template.render(context))
 		return HttpResponse(status=405)
 	elif request.method == 'POST':
