@@ -2,10 +2,54 @@
 
 {% block title %}Home{% endblock %}
 
+{% block head %}
+	{{ block.super }}
+	<link rel="stylesheet" href="{{ STATIC_URL }}styles/home.css" type="text/css">
+{% endblock %}
+
 {% block body %}
-	Home page
-	{% comment %}
-	You'll need to include Django's login and signup(?) form here somewhere,
-	which should redirect to /boards afterwards
-	{% endcomment %}
+	<h1>PointsBoard</h1>
+	<h2>A place to give people points!</h2>
+	<p>Create and join boards where people can award other people points for anything that you want.</p>
+	<form id="login" method="post">
+		{% csrf_token %}
+		<fieldset>
+			<legend>Already a member? Login:</legend>
+			{% if login_feedback %}
+				<strong>{{ login_feedback }}</strong>
+			{% endif %}
+			<p>
+				<label for="username_login">Username:</label>
+				<input type="text" name="username_login" id="username_login">
+			</p>
+			<p>
+				<label for="password_login">Password:</label>
+				<input type="password" name="password_login" id="password_login">
+			</p>
+			<input type="submit" name="login" value="Login">
+		</fieldset>
+	</form>
+	<form id="register" method="post">
+		{% csrf_token %}
+		<fieldset>
+			<legend>New User? Register:</legend>
+			{% if register_feedback %}
+				<strong>{{ register_feedback }}</strong>
+			{% endif %}
+			<p>
+				<label for="username_register">Username:</label>
+				<input type="text" name="username_register" id="username_register">
+			</p>
+			<p>
+				<label for="password_register">Password:</label>
+				<input type="password" name="password_register" id="password_register">
+			</p>
+			<p>
+				<label for="password_confirm">Confirm Password:</label>
+				<input type="password" name="password_confirm" id="password_confirm">
+			</p>
+			<input type="submit" name="register" value="Register">
+		</fieldset>
+	</form>
+	<div class="clear"></div>
 {% endblock %} 

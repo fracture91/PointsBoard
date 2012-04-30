@@ -6,33 +6,52 @@ x{% extends "points/base.html" %}
 	{{ board.name }}
 {% endblock %}
 
+{% block head %}
+	{{ block.super }}
+	<link rel="stylesheet" href="{{ STATIC_URL }}points/styles/board.css" type="text/css">
+	<link rel="stylesheet" href="{{ STATIC_URL }}points/styles/transaction.css" type="text/css">
+{% endblock %}
+
 {% block content %}
-	Board page
-	<p>
-		{{ board.description }}
-	</p>
 	{% if user.is_authenticated and user.id == board.owner.id %}
-		<form method="post" action="/boards/{{ board.id }}">
-			{% csrf_token %}
-			<input type="text" name="newDescription" value="{{ board.description }}"/>
-			<input type="submit" value="Edit Description" />
-		</form>
-		<form method="post" action="/boards/{{ board.id }}">
-			{% csrf_token %}
-			<input type="text" name="categoryName" />
-			<input type="submit" value="Add Category" />
-		</form>
-		<form method="post" action="/boards/{{ board.id }}">
-			{% csrf_token %}
-			<input type="text" name="userName" />
-			<input type="submit" value="Add User" />
-		</form>
-		
+		<aside id="owner_controls">
+			<h1>Owner Controls</h1>
+			<form method="post" action="{% url board board.id %}">
+				{% csrf_token %}
+				<input type="text" name="newDescription" value="{{ board.description }}">
+				<input type="submit" value="Edit Description">
+			</form>
+			<form method="post" action="{% url board board.id %}">
+				{% csrf_token %}
+				<input type="text" name="categoryName">
+				<input type="submit" value="Add Category">
+			</form>
+			<form method="post" action="{% url board board.id %}">
+				{% csrf_token %}
+				<input type="text" name="categoryName">
+				<input type="submit" name="removeCategory" value="Remove Category">
+			</form>
+			<form method="post" action="{% url board board.id %}">
+				{% csrf_token %}
+				<input type="text" name="userName">
+				<input type="submit" value="Add User">
+			</form>
+			<form method="post" action="{% url board board.id %}">
+				{% csrf_token %}
+				<input type="text" name="userName">
+				<input type="submit" name="removeUser" value="Remove User">
+			</form>
+		</aside>
 	{% endif %}
+	
+	<h1>{{ board.name }}</h1>
+	<p>{{ board.description }}</p>
+	
 	<table id="board">
+		<caption>{{ board.name }} PointsBoard</caption>
 		<thead>
 			<tr>
-				<th>User</th>
+				<th></th>
 				{% for category in cats %}
 				<th>{{ category }}</th>
 				{% endfor %}
@@ -41,9 +60,9 @@ x{% extends "points/base.html" %}
 		<tbody>
 			{% for username, userCells in cells.items %}
 			<tr>
-				<td class="username">
+				<th class="username">
 					{{ username }}
-				</td>
+				</th>
 				{% for category, cell in userCells.items %}
 				<td class="points">
 					{{ cell.points }}
@@ -56,33 +75,31 @@ x{% extends "points/base.html" %}
 	
 	<div id="transactioncontainer">
 		<div id="newtransaction">
-			<form method="post" action="/boards/{{ board.id }}/transactions">
+			<form method="post" action="{% url boardTransactions board.id %}">
 				{% csrf_token %}
 				<p>
 					I want to
-					<select name="action">
+					<select name="action" id="trans_action">
 						<option>give</option>
 						<option>remove</option>
 					</select>
-					<input type="number" name="numPts" size="2"/>
-					<select name="category">
+					<input type="number" name="numPts" size="2" placeholder="1">
+					<select name="category" id="trans_category">
 						{% for category in cats %}
 						<option>{{ category }}</option>
 						{% endfor %}
 					</select>
 					points to/from
-					<select name="rcvUser">
+					<select name="rcvUser" id="trans_rcvUser">
 						{% for username, userCells in cells.items %}
-							{% if username != user.username %}
-								<option>{{ username }}</option>
-							{% endif %}
+							<option>{{ username }}</option>
 						{% endfor %}
-					</select>
+					</select>.
 				</p>
 				<p>
-					Reason:
-					<input type="text" name="reason" />
-					<input type="submit" value="Submit" />
+					I am making this transaction for this user...
+					<input type="text" name="reason" placeholder="for helping an old lady cross the road">.
+					<input type="submit" value="Submit">
 				</p>
 			</form>
 		</div>

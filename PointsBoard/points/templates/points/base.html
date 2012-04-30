@@ -9,7 +9,18 @@
 
 {% block body %}
 	{{ block.super }}
-	
-	{% block content %}{% endblock %}
-	
+	<header id="points_header">
+		<h1>PointsBoard</h1>
+		<nav>
+			<ul>
+				<li>Logged in as <strong>{{ user.username }}</strong></li>
+				<li><a href="{% url userBoards %}">Your Boards</a></li>
+				<li><a href="{% url logout %}">Log Out</a></li>
+			</ul>
+		</nav>
+		<div class="clear"></div>
+	</header>
+	<section id="points_main">
+		{% block content %}{% endblock %}
+	</section>
 {% endblock %}
