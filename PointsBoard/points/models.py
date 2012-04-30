@@ -3,6 +3,9 @@ from django.contrib.auth.models import User
 from django.dispatch import receiver
 from django.db.models.signals import m2m_changed, post_save, post_delete
 from django.core.exceptions import ValidationError
+from django.conf import settings
+
+COMMENT_MAX_LENGTH = getattr(settings,'COMMENT_MAX_LENGTH',3000)
 
 """
 Django doesn't support primary keys with multiple columns :(
@@ -145,3 +148,19 @@ def onTransactionDelete(sender, instance, **kwargs):
 		category, triggering this signal receiver.
 		"""
 		pass
+
+class MinComment(models.Model):
+	transaction = models.ForeignKey(Transaction, related_name="comments")
+	user        = models.ForeignKey(User, related_name="users_comments")
+	comment     = models.TextField(max_length=COMMENT_MAX_LENGTH)
+	submit_date = models.DateTimeField()
+	
+	class Meta:
+		db_table = "django_comments"
+		ordering = ('submit_date',)
+		permissions = [("can_moderate", "Can moderate comments")]
+		verbose_name = "comment"
+		verbose_name_plural = "comments"
+	
+	def __unicode__(self):
+		return "%s: %s..." % (self.user.username, self.comment[:50])
