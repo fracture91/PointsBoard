@@ -47,33 +47,34 @@
 	
 	<h1>{{ board.name }}</h1>
 	<p>{{ board.description }}</p>
-	
+	{% spaceless %}
 	<table id="board">
 		<caption>{{ board.name }} PointsBoard</caption>
-		<thead>
-			<tr>
-				<th></th>
-				{% for category in cats %}
-				<th>{{ category }}</th>
-				{% endfor %}
-			</tr>
-		</thead>
-		<tbody>
-			{% for username, userCells in cells.items %}
-			<tr>
-				<th class="username">
-					{{ username }}
-				</th>
-				{% for category, cell in userCells.items %}
-				<td class="points">
-					{{ cell.points }}
-				</td>
-				{% endfor %}
-			</tr>
-			{% endfor %}
+		{% for row in boardArray %}
+			{% if forloop.first %}
+			<thead>
+				<tr>
+					{% for cell in row %}
+						<th>{{ cell }}</th>
+					{% endfor %}
+				</tr>
+			</thead>
+			<tbody>
+			{% else %}
+				<tr>
+					{% for cell in row %}
+						{% if forloop.first %}
+							<th class="username">{{ cell }}</th>
+						{% else %}
+							<td class="points">{{ cell }}</td>
+						{% endif %}
+					{% endfor %}
+				</tr>
+			{% endif %}
+		{% endfor %}
 		</tbody>
 	</table>
-	
+	{% endspaceless %}
 	<div id="transactioncontainer">
 		<div id="newtransaction">
 			<form method="post" action="{% url boardTransactions board.id %}">
