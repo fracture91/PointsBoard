@@ -134,6 +134,14 @@ def onTransactionDelete(sender, instance, **kwargs):
 	Remove the transaction's points from the appropriate cell when deleted.
 	Intended for when a board owner "reverses" a transaction (which deletes it).
 	"""
-	cell = instance.category.cell_set.get(user=instance.recipient)
-	cell.points -= instance.points
-	cell.save()
+	try:
+		cell = instance.category.cell_set.get(user=instance.recipient)
+		cell.points -= instance.points
+		cell.save()
+	except (Cell.DoesNotExist, Category.DoesNotExist):
+		"""
+		These may not exist.  For example, if you delete a category, this will cascade
+		into the deletion of that category's cells, and then transactions associated with that
+		category, triggering this signal receiver.
+		"""
+		pass
