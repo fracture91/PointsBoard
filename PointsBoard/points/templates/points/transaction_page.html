@@ -12,7 +12,7 @@ Transaction
 {% endblock %}
 
 {% block content %}
-	Transaction page
+	<h1>Transaction on <a href="{% url board transaction.board.id %}">{{ transaction.board }}</a></h1>
 	
 	{% include "points/transaction.html" %}
 {% endblock %}

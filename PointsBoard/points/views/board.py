@@ -24,6 +24,7 @@ def getCats(boardId):
 	catArr = []
 	for cat in categories:
 		catArr.append(cat.name)
+	catArr.sort()
 	return catArr
 
 """
@@ -40,6 +41,19 @@ def getCells(boardId):
 				cellDict[cell.user.username] = {}
 			cellDict[cell.user.username][cat.name] = cell
 	return cellDict
+
+def makeBoardArray(cats, cells):
+	boardArray = []
+	boardArray.insert(0, cats)
+	boardArray[0].insert(0, "") #empty string for top-left corner
+	boardIdx = 0
+	for username, userCells in cells.iteritems():
+		boardIdx += 1
+		boardArray.append([username])
+		for cat in cats:
+			if cat != "":
+				boardArray[boardIdx].append(userCells[cat].points)
+	return boardArray 
 
 @login_required
 def board(request, boardId):
@@ -92,7 +106,7 @@ def board(request, boardId):
 	transactions = getTransStr(request, board)
 	cats = getCats(boardId)
 	cells = getCells(boardId)
-	
+	boardArray = makeBoardArray(cats, cells)
 	context = RequestContext(request,
-							{"board":board, "transactions":transactions, "cats":cats, "cells":cells})
+							{"board":board, "transactions":transactions, "cats":cats, "cells":cells, "boardArray":boardArray})
 	return HttpResponse(template.render(context))

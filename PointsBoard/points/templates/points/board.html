@@ -1,4 +1,4 @@
-x{% extends "points/base.html" %}
+{% extends "points/base.html" %}
 
 {# The main board page containing the board itself, some transactions, owner controls, etc. #}
 
@@ -10,6 +10,7 @@ x{% extends "points/base.html" %}
 	{{ block.super }}
 	<link rel="stylesheet" href="{{ STATIC_URL }}points/styles/board.css" type="text/css">
 	<link rel="stylesheet" href="{{ STATIC_URL }}points/styles/transaction.css" type="text/css">
+	<script src="{{ STATIC_URL }}points/scripts/board.js" type="text/javascript"></script>
 {% endblock %}
 
 {% block content %}
@@ -45,34 +46,36 @@ x{% extends "points/base.html" %}
 	{% endif %}
 	
 	<h1>{{ board.name }}</h1>
+	<p>Owned by {{ board.owner }}</p>
 	<p>{{ board.description }}</p>
-	
+	{% spaceless %}
 	<table id="board">
 		<caption>{{ board.name }} PointsBoard</caption>
-		<thead>
-			<tr>
-				<th></th>
-				{% for category in cats %}
-				<th>{{ category }}</th>
-				{% endfor %}
-			</tr>
-		</thead>
-		<tbody>
-			{% for username, userCells in cells.items %}
-			<tr>
-				<th class="username">
-					{{ username }}
-				</th>
-				{% for category, cell in userCells.items %}
-				<td class="points">
-					{{ cell.points }}
-				</td>
-				{% endfor %}
-			</tr>
-			{% endfor %}
+		{% for row in boardArray %}
+			{% if forloop.first %}
+			<thead>
+				<tr>
+					{% for cell in row %}
+						<th>{{ cell }}</th>
+					{% endfor %}
+				</tr>
+			</thead>
+			<tbody>
+			{% else %}
+				<tr>
+					{% for cell in row %}
+						{% if forloop.first %}
+							<th class="username">{{ cell }}</th>
+						{% else %}
+							<td class="points">{{ cell }}</td>
+						{% endif %}
+					{% endfor %}
+				</tr>
+			{% endif %}
+		{% endfor %}
 		</tbody>
 	</table>
-	
+	{% endspaceless %}
 	<div id="transactioncontainer">
 		<div id="newtransaction">
 			<form method="post" action="{% url boardTransactions board.id %}">
