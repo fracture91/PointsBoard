@@ -1,5 +1,18 @@
 /* Rules specific to board.html */
 
+#points_main section > h1 {
+	background-color: #eee;
+	padding-bottom: 3px;
+}
+
 #owner_controls {
 	float: right;
+}
+
+#board{
+	float:left;
+}
+
+body {
+	margin-top: 0;
 }

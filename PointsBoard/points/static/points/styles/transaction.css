@@ -1,2 +1,10 @@
 /* Rules specific to any page that can contain transaction.html */
 
+#transactioncontainer{
+	float:left;
+}
+
+body {
+	margin-top: 0;
+}
+

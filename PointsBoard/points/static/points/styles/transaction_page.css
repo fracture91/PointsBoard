@@ -1,2 +1,5 @@
 /* Rules specific to transaction_page.html (not just any old page including a transaction!) */
 
+body {
+	margin-top: 0;
+}
