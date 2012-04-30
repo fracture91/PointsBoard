@@ -50,8 +50,9 @@ def makeBoardArray(cats, cells):
 	for username, userCells in cells.iteritems():
 		boardIdx += 1
 		boardArray.append([username])
-		for cat, cell in userCells.iteritems():
-			boardArray[boardIdx].append(cell.points)
+		for cat in cats:
+			if cat != "":
+				boardArray[boardIdx].append(userCells[cat].points)
 	return boardArray 
 
 @login_required
