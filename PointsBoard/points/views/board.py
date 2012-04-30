@@ -24,6 +24,7 @@ def getCats(boardId):
 	catArr = []
 	for cat in categories:
 		catArr.append(cat.name)
+	catArr.sort()
 	return catArr
 
 """
