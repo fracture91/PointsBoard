@@ -2,4 +2,55 @@
 
 #owner_controls {
 	float: right;
+	margin: 0 0 2em 2em;
+}
+
+#board,
+#board td,
+#board th,
+#board caption {
+	border-collapse: collapse;
+	border: 1px solid #333;
+}
+
+#board > tbody > tr:nth-child(2n) {
+	background-color: #eee;
+}
+
+#board td {
+	text-align: center;
+	cursor: pointer;
+}
+
+#board td:hover {
+	background-color: #d3daff;
+}
+
+#board td:nth-child(2n) {
+	color: #555;
+}
+
+#board .username {
+	min-width: 7em;
+}
+
+#board .points {
+	min-width: 3em;
+}
+
+#transactioncontainer {
+	margin-top: 2em;
+	border: 1px solid #333;
+}
+
+#newtransaction {
+	background-color: #d3dadf;
+	padding: 1em;
+	margin: 1em 2em;
+	border: 1px solid #333;
+	text-align: center;
+}
+
+#newtransaction input[name="reason"] {
+	width: 20em;
 }
