@@ -56,10 +56,18 @@ def board(request, boardId):
 				board.save()
 			#add new category
 			elif request.POST.has_key("categoryName"):
-				newcatname = request.POST["categoryName"]
-				newcat = Category(board=board, name=newcatname)
-				newcat.full_clean()
-				newcat.save()
+				remove = "removeCategory" in request.POST
+				catname = request.POST["categoryName"]
+				if not remove:
+					category = Category(board=board, name=catname)
+					category.full_clean()
+					category.save()
+				else:
+					try:
+						category = Category.objects.get(name__exact=catname, board=board)
+					except Category.DoesNotExist:
+						return HttpResponse("That category does not exist.")
+					category.delete()
 			#add new user
 			elif request.POST.has_key("userName"):
 				remove = "removeUser" in request.POST
@@ -73,7 +81,7 @@ def board(request, boardId):
 				else :
 					try:
 						user = board.participants.get(username__exact=username)
-					except:
+					except User.DoesNotExist:
 						return HttpResponse("That user is not a board participant.")
 					board.participants.remove(user)
 				board.full_clean()

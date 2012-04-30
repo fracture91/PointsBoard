@@ -28,6 +28,11 @@
 			</form>
 			<form method="post" action="{% url board board.id %}">
 				{% csrf_token %}
+				<input type="text" name="categoryName">
+				<input type="submit" name="removeCategory" value="Remove Category">
+			</form>
+			<form method="post" action="{% url board board.id %}">
+				{% csrf_token %}
 				<input type="text" name="userName">
 				<input type="submit" value="Add User">
 			</form>
