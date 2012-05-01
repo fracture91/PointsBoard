@@ -61,6 +61,7 @@ function TransactionForm(form) {
 	this.pointsInput = this.form["numPts"];
 	this.categoryInput = this.form["category"];
 	this.usernameInput = this.form["rcvUser"];
+	this.reasonInput = this.form["reason"];
 }
 
 TransactionForm.prototype = {
@@ -97,9 +98,63 @@ Filler.prototype = {
 	}
 }
 
+
+/**
+ * Handles XHRs for an Ajaxer on the transaction form.
+ * Adds new transactions and updates the board.
+ * 
+ * @param board A Board instance to update
+ * @param transForm A TransactionForm instance
+ */
+function TransactionHandler(board, transForm) {
+	this.board = board;
+	this.transForm = transForm;
+	this.container = this.transForm.form.parentNode;
+	this.form = this.transForm.form;
+}
+
+TransactionHandler.prototype = {
+	ajaxerAfterSend: function(e, xhr) {
+		var p = document.createElement("p");
+		p.className = "feedback";
+		p.textContent = "Submitting...";
+		this.form.appendChild(p);
+	},
+	ajaxerValidate: function(e) {
+		if(this.transForm.reasonInput.value == "") {
+			throw "You must input a reason for the transaction.";
+		}
+		if(this.transForm.categoryInput.value == "") {
+			throw "You must choose a category.";
+		}
+		if(this.transForm.usernameInput.value == "") {
+			throw "You must choose a username."
+		}
+	},
+	ajaxerShowError: function(errStr) {
+		alert(errStr);
+	},
+	ajaxerOnSuccess: function(xhr) {
+		var transactions = xhr.ajaxer.parseBody(xhr.responseText).getElementsByClassName("transaction");
+		var numToAdd = transactions.length - document.getElementsByClassName("transaction").length;
+		transactions = Array.prototype.slice.call(transactions, 0, numToAdd);
+		var insertAfterMe = this.container;
+		transactions.forEach(function(trans) {
+			insertAfterMe.parentNode.insertBefore(trans, insertAfterMe.nextSibling);
+			insertAfterMe = trans;
+		});
+	},
+	ajaxerXHRLoadEnd: function(xhr) {
+		var p = this.container.getElementsByClassName("feedback")[0];
+		p.parentNode.removeChild(p);
+	}
+}
+
 window.addEventListener("load", function(e) {
 	window.board = new Board(document.getElementById("board"));
 	window.transForm = new TransactionForm(document.getElementById("newtransaction")
 			.getElementsByTagName("form")[0]);
-	window.filler = new Filler(board, transForm); 
+	window.filler = new Filler(board, transForm);
+	
+	window.transactionAjax = new Ajaxer(new TransactionHandler(board, transForm));
 })
