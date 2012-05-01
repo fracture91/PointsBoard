@@ -1,14 +1,9 @@
 /* Rules specific to home.html */
-
-body{
-	background: #CCC
-}
-
 #home {
 	width: 960px;
 	margin: 0 auto;
 	border: 1px solid #333;
-	background: #008257;
+	background: #CCC;
 }
 
 .clear {
@@ -41,12 +36,12 @@ form {
 }
 
 #reg_field, #log_field{
-	background:#CCC;
+	background:#008257;
 }
 
 #reg_leg, #log_leg{
 	border: 1px solid;
-	background:#CCC;
+	background:#008257;
 }
 
 label.username{

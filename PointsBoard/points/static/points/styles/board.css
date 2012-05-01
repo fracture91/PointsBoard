@@ -11,6 +11,7 @@
 #board caption {
 	border-collapse: collapse;
 	border: 1px solid #333;
+	background: #CCC;
 }
 
 #board > tbody > tr:nth-child(2n) {
@@ -23,7 +24,7 @@
 }
 
 #board td:hover {
-	background-color: #d3daff;
+	background-color: #669966;
 }
 
 #board td:nth-child(2n) {
@@ -45,7 +46,7 @@
 }
 
 #newtransaction {
-	background-color: #d3dadf;
+	background-color: #CCC;
 	padding: 1em;
 	margin: 1em 2em;
 	border: 1px solid #333;
