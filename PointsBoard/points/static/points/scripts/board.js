@@ -20,7 +20,6 @@ function Cell(el, category, username) {
  */
 function Board(table) {
 	this.table = table;
-	this.head = this.table.getElementsByTagName("thead")[0];
 }
 
 Board.prototype = {
@@ -47,7 +46,20 @@ Board.prototype = {
 		return null;
 	},
 	getCategory: function(index) {
-		return this.trim(this.head.getElementsByTagName("th")[index].textContent);
+		return this.trim(this.getHead().getElementsByTagName("th")[index].textContent);
+	},
+	getHead: function() {
+		return this.table.getElementsByTagName("thead")[0];
+	},
+	
+	/**
+	 * Replace the contents of this table with the contents of newTable.
+	 */
+	replaceWith: function(newTable) {
+		this.table.innerHTML = "";
+		while(newTable.children.length > 0) {
+			this.table.appendChild(newTable.firstElementChild);
+		}
 	}
 }
 
@@ -135,7 +147,8 @@ TransactionHandler.prototype = {
 		alert(errStr);
 	},
 	ajaxerOnSuccess: function(xhr) {
-		var transactions = xhr.ajaxer.parseBody(xhr.responseText).getElementsByClassName("transaction");
+		var newBody = xhr.ajaxer.parseBody(xhr.responseText);
+		var transactions = newBody.getElementsByClassName("transaction");
 		var numToAdd = transactions.length - document.getElementsByClassName("transaction").length;
 		transactions = Array.prototype.slice.call(transactions, 0, numToAdd);
 		var insertAfterMe = this.container;
@@ -143,6 +156,7 @@ TransactionHandler.prototype = {
 			insertAfterMe.parentNode.insertBefore(trans, insertAfterMe.nextSibling);
 			insertAfterMe = trans;
 		});
+		this.board.replaceWith(newBody.getElementsByTagName("table")[0]);
 	},
 	ajaxerXHRLoadEnd: function(xhr) {
 		var p = this.container.getElementsByClassName("feedback")[0];
