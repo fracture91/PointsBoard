@@ -9,7 +9,7 @@
 	width: 10em;
 }
 
-.boardcontainer {
+#boardcontainer {
 	width: 100%;
 	overflow-x: scroll;
 	clear: both;

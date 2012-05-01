@@ -198,7 +198,7 @@ ControlsHandler.prototype = {
 		if(table) {
 			replaceWith(this.board.table, table);
 			//description
-			this.board.table.previousElementSibling.textContent = table.previousElementSibling.textContent;
+			this.board.table.parentElement.previousElementSibling.textContent = table.parentElement.previousElementSibling.textContent;
 			
 			var form = table.nextElementSibling.getElementsByTagName("form")[0];
 			var newForm = new TransactionForm(form);
