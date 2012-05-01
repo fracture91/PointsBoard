@@ -197,6 +197,9 @@ ControlsHandler.prototype = {
 		var table = newBody.getElementsByTagName("table")[0];
 		if(table) {
 			replaceWith(this.board.table, table);
+			//description
+			this.board.table.previousElementSibling.textContent = table.previousElementSibling.textContent;
+			
 			var form = table.nextElementSibling.getElementsByTagName("form")[0];
 			var newForm = new TransactionForm(form);
 			replaceWith(this.transForm.categoryInput, newForm.categoryInput);
@@ -221,8 +224,7 @@ window.addEventListener("load", function(e) {
 	
 	var forms = document.getElementById("owner_controls").getElementsByTagName("form");
 	window.ownerControlsAjax = [];
-	//skip first form
-	for(var i = 1; i < forms.length; i++) {
+	for(var i = 0; i < forms.length; i++) {
 		ownerControlsAjax.push(new Ajaxer(new ControlsHandler(board, forms[i], transForm)));
 	}
 })
