@@ -4,6 +4,7 @@ from django.http import HttpResponse
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from points.models import Board, Transaction, Category, Cell
+from points.views.transaction import renderSingleTransaction 
 
 """
 Get string containing HTML representation of all transactions for given board
@@ -12,8 +13,7 @@ def getTransStr(request, board):
 	transactions = Transaction.objects.filter(board=board.id)
 	alltrans = []
 	for t in transactions:
-		alltrans.append(
-					render_to_string('points/transaction.html', {"transaction": t, "board": board}, RequestContext(request)))
+		alltrans.append(renderSingleTransaction(request, t))
 	return "\n".join(alltrans)
 
 """

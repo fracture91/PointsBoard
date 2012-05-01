@@ -41,6 +41,7 @@
 #transactioncontainer {
 	margin-top: 2em;
 	border: 1px solid #333;
+	border-width: 0 1px;
 }
 
 #newtransaction {
