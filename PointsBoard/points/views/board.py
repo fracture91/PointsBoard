@@ -88,7 +88,7 @@ def board(request, boardId):
 					try:
 						category = Category.objects.get(name__exact=catname, board=board)
 					except Category.DoesNotExist:
-						return HttpResponse("That category does not exist.")
+						return HttpResponse("That category does not exist.", status=400)
 					category.delete()
 			#add new user
 			elif request.POST.has_key("userName"):
@@ -98,13 +98,13 @@ def board(request, boardId):
 					try:
 						user = User.objects.get(username__exact=username)
 					except User.DoesNotExist:
-						return HttpResponse("That user does not exist.")
+						return HttpResponse("That user does not exist.", status=400)
 					board.participants.add(user)
 				else :
 					try:
 						user = board.participants.get(username__exact=username)
 					except User.DoesNotExist:
-						return HttpResponse("That user is not a board participant.")
+						return HttpResponse("That user is not a board participant.", status=400)
 					board.participants.remove(user)
 				board.full_clean()
 				board.save()

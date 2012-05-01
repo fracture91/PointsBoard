@@ -38,11 +38,24 @@ Ajaxer.prototype = {
 		}
 		
 		xhr.open(this.handler.form.method, this.handler.form.getAttribute("action"), true);
-		xhr.send(new FormData(this.handler.form));
+		var formData = new FormData(this.handler.form);
+		var submit = this.findFirstSubmitButton(this.handler.form);
+		if(submit) {
+			formData.append(submit.name, submit.value);
+		}
+		xhr.send(formData);
 		
 		if(typeof this.handler.ajaxerAfterSend == "function") {
 			this.handler.ajaxerAfterSend(e, xhr);
 		}
+	},
+	
+	findFirstSubmitButton: function(form) {
+		var inputs = form.getElementsByTagName("input");
+		var submits = Array.prototype.filter.call(inputs, function(el) {
+			return el.type == "submit";
+		});
+		return submits[0];
 	},
 	
 	onReadyStateChange: function(xhr) {

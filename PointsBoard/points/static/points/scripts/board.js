@@ -164,6 +164,48 @@ TransactionHandler.prototype = {
 	}
 }
 
+
+/**
+ * Handles XHRs for an Ajaxer on the Owner Controls forms.
+ * 
+ * @param board A Board instance to update
+ * @param form The form element to get input from
+ */
+function ControlsHandler(board, form) {
+	this.board = board;
+	this.form = form;
+}
+
+ControlsHandler.prototype = {
+	ajaxerAfterSend: function(e, xhr) {
+		var p = document.createElement("p");
+		p.className = "feedback";
+		p.textContent = "Submitting...";
+		this.form.parentNode.insertBefore(p, this.form.nextSibling);
+	},
+	ajaxerValidate: function(e) {
+		if(this.form.getElementsByTagName("input")[1].value == "") {
+			throw "You cannot leave the field blank.";
+		}
+	},
+	ajaxerShowError: function(errStr) {
+		alert(errStr);
+	},
+	ajaxerOnSuccess: function(xhr) {
+		var newBody = xhr.ajaxer.parseBody(xhr.responseText);
+		var table = newBody.getElementsByTagName("table")[0];
+		if(table) {
+			this.board.replaceWith(table);
+		}
+	},
+	ajaxerXHRLoadEnd: function(xhr) {
+		var p = this.form.nextSibling;
+		if(p.classList.contains("feedback")) {
+			p.parentNode.removeChild(p);
+		}
+	}
+}
+
 window.addEventListener("load", function(e) {
 	window.board = new Board(document.getElementById("board"));
 	window.transForm = new TransactionForm(document.getElementById("newtransaction")
@@ -171,4 +213,11 @@ window.addEventListener("load", function(e) {
 	window.filler = new Filler(board, transForm);
 	
 	window.transactionAjax = new Ajaxer(new TransactionHandler(board, transForm));
+	
+	var forms = document.getElementById("owner_controls").getElementsByTagName("form");
+	window.ownerControlsAjax = [];
+	//skip first form
+	for(var i = 1; i < forms.length; i++) {
+		ownerControlsAjax.push(new Ajaxer(new ControlsHandler(board, forms[i])));
+	}
 })
