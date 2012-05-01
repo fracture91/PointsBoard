@@ -68,7 +68,11 @@ Ajaxer.prototype = {
 					this.handler.ajaxerOnFailure(xhr);
 				}
 				else {
-					this.showError("Error: " + xhr.status);
+					var errMsg = "Error: " + xhr.status;
+					if(xhr.status >= 400 && xhr.status < 500) { //client error
+						errMsg += "\n" + xhr.responseText; //should contain some kind of error message
+					}
+					this.showError(errMsg);
 				}
 			}
 		}

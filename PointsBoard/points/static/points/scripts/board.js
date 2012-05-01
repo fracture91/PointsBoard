@@ -1,6 +1,16 @@
 "use strict";
 
 /**
+ * Replace the contents of target with the contents of source.
+ */
+function replaceWith(target, source) {
+	target.innerHTML = "";
+	while(source.children.length > 0) {
+		target.appendChild(source.firstElementChild);
+	}
+}
+
+/**
  * Holds information about a cell in a Board.
  * 
  * @param el The TD element
@@ -50,16 +60,6 @@ Board.prototype = {
 	},
 	getHead: function() {
 		return this.table.getElementsByTagName("thead")[0];
-	},
-	
-	/**
-	 * Replace the contents of this table with the contents of newTable.
-	 */
-	replaceWith: function(newTable) {
-		this.table.innerHTML = "";
-		while(newTable.children.length > 0) {
-			this.table.appendChild(newTable.firstElementChild);
-		}
 	}
 }
 
@@ -156,7 +156,7 @@ TransactionHandler.prototype = {
 			insertAfterMe.parentNode.insertBefore(trans, insertAfterMe.nextSibling);
 			insertAfterMe = trans;
 		});
-		this.board.replaceWith(newBody.getElementsByTagName("table")[0]);
+		replaceWith(this.board.table, newBody.getElementsByTagName("table")[0]);
 	},
 	ajaxerXHRLoadEnd: function(xhr) {
 		var p = this.container.getElementsByClassName("feedback")[0];
@@ -171,9 +171,10 @@ TransactionHandler.prototype = {
  * @param board A Board instance to update
  * @param form The form element to get input from
  */
-function ControlsHandler(board, form) {
+function ControlsHandler(board, form, transForm) {
 	this.board = board;
 	this.form = form;
+	this.transForm = transForm;
 }
 
 ControlsHandler.prototype = {
@@ -195,7 +196,11 @@ ControlsHandler.prototype = {
 		var newBody = xhr.ajaxer.parseBody(xhr.responseText);
 		var table = newBody.getElementsByTagName("table")[0];
 		if(table) {
-			this.board.replaceWith(table);
+			replaceWith(this.board.table, table);
+			var form = table.nextElementSibling.getElementsByTagName("form")[0];
+			var newForm = new TransactionForm(form);
+			replaceWith(this.transForm.categoryInput, newForm.categoryInput);
+			replaceWith(this.transForm.usernameInput, newForm.usernameInput);
 		}
 	},
 	ajaxerXHRLoadEnd: function(xhr) {
@@ -218,6 +223,6 @@ window.addEventListener("load", function(e) {
 	window.ownerControlsAjax = [];
 	//skip first form
 	for(var i = 1; i < forms.length; i++) {
-		ownerControlsAjax.push(new Ajaxer(new ControlsHandler(board, forms[i])));
+		ownerControlsAjax.push(new Ajaxer(new ControlsHandler(board, forms[i], transForm)));
 	}
 })

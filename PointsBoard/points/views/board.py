@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from points.models import Board, Transaction, Category, Cell
 from points.views.transaction import renderSingleTransaction 
+from django.core.exceptions import ValidationError
 
 """
 Get string containing HTML representation of all transactions for given board
@@ -81,8 +82,11 @@ def board(request, boardId):
 				remove = "removeCategory" in request.POST
 				catname = request.POST["categoryName"]
 				if not remove:
-					category = Category(board=board, name=catname)
-					category.full_clean()
+					try:
+						category = Category(board=board, name=catname)
+						category.full_clean()
+					except ValidationError as e:
+						return HttpResponse(e, status=400)
 					category.save()
 				else:
 					try:
