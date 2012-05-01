@@ -24,7 +24,7 @@ def transaction(request, boardId, transactionId=-1):
 			try:
 				transaction = Transaction.objects.get(pk=transactionId)
 			except Transaction.DoesNotExist:
-				return HttpResponse(status=404)
+				return HttpResponse(status=404, content="Transaction does not exist.")
 			context = RequestContext(request, {"transaction": transaction, "board": board, "comments":getAllComments(transaction)})
 			return HttpResponse(template.render(context))
 		return HttpResponse(status=405)
@@ -54,7 +54,7 @@ def transaction(request, boardId, transactionId=-1):
 			try:
 				todel = Transaction.objects.get(pk=transactionId)
 			except Transaction.DoesNotExist:
-				return HttpResponse(status=404)
+				return HttpResponse(status=404, content="Transaction does not exist")
 			todel.delete()
 		response = HttpResponse()
 		response['Refresh'] = "0; url=/boards/"+str(boardId)

@@ -158,8 +158,8 @@ class MinComment(models.Model):
 	class Meta:
 		ordering = ('submit_date',)
 		permissions = [("can_moderate", "Can moderate comments")]
-		verbose_name = "comment"
-		verbose_name_plural = "comments"
+		verbose_name = "MinComment"
+		verbose_name_plural = "MinComments"
 	
 	def __unicode__(self):
 		return "%s: %s..." % (self.user.username, self.comment[:50])

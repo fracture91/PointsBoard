@@ -4,9 +4,12 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from points.models import MinComment, Transaction, Board
 
+def commentTextToHtml(commentText):
+	return commentText.replace("<", "&lt;").replace(">", "&gt;").replace("\n", "<br />")
+
 def singleComment(comment):
 	template = loader.get_template('points/comment.html')
-	context = Context({"comment":comment})
+	context = Context({"comment":comment, "commentText":commentTextToHtml(comment.comment)})
 	return template.render(context)
 
 def getAllComments(trans):

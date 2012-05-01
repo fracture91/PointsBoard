@@ -1,4 +1,9 @@
 <article class="comment" id="c{{ comment.id }}">
-	<header>{{ comment.submit_date }} - {{ comment.user.username }}</header>
-	<p>{{ comment.comment }}</p>
+	<header>
+		<span class="commentDate">{{ comment.submit_date }}</span> -
+		<span class="commentPoster">{{ comment.user.username }}</span>
+	</header>
+	{% autoescape off %}
+	<p>{{ commentText }}</p>
+	{% endautoescape %}
 </article>
