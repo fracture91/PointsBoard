@@ -48,34 +48,36 @@
 	<h1>{{ board.name }}</h1>
 	<p>Owned by {{ board.owner }}</p>
 	<p>{{ board.description }}</p>
-	{% spaceless %}
-	<table id="board">
-		<caption>{{ board.name }} PointsBoard</caption>
-		{% for row in boardArray %}
-			{% if forloop.first %}
-			<thead>
-				<tr>
-					{% for cell in row %}
-						<th>{{ cell }}</th>
-					{% endfor %}
-				</tr>
-			</thead>
-			<tbody>
-			{% else %}
-				<tr>
-					{% for cell in row %}
-						{% if forloop.first %}
-							<th class="username">{{ cell }}</th>
-						{% else %}
-							<td class="points">{{ cell }}</td>
-						{% endif %}
-					{% endfor %}
-				</tr>
-			{% endif %}
-		{% endfor %}
-		</tbody>
-	</table>
-	{% endspaceless %}
+	<div class="boardcontainer">
+		{% spaceless %}
+		<table id="board">
+			<caption>{{ board.name }} PointsBoard</caption>
+			{% for row in boardArray %}
+				{% if forloop.first %}
+				<thead>
+					<tr>
+						{% for cell in row %}
+							<th>{{ cell }}</th>
+						{% endfor %}
+					</tr>
+				</thead>
+				<tbody>
+				{% else %}
+					<tr>
+						{% for cell in row %}
+							{% if forloop.first %}
+								<th class="username">{{ cell }}</th>
+							{% else %}
+								<td class="points">{{ cell }}</td>
+							{% endif %}
+						{% endfor %}
+					</tr>
+				{% endif %}
+			{% endfor %}
+			</tbody>
+		</table>
+		{% endspaceless %}
+	</div>
 	<div id="transactioncontainer">
 		<div id="newtransaction">
 			<form method="post" action="{% url boardTransactions board.id %}">
@@ -102,7 +104,7 @@
 				<p>
 					I am making this transaction for this user...
 					<input type="text" name="reason" placeholder="for helping an old lady cross the road">.
-					<input type="submit" value="Submit">
+					<input type="submit" value="Submit" class="transactionSubmit">
 				</p>
 			</form>
 		</div>

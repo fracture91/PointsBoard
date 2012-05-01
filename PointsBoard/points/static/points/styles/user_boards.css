@@ -10,8 +10,9 @@
 }
 
 #points_main section > header {
-	background-color: #008257;
+	background-color: #CCC;
 	padding-bottom: 3px;
+	border-bottom: 1px solid #333;
 }
 
 #points_main section > header > h1 {
@@ -28,5 +29,14 @@
 }
 
 #points_main{
-	background-color: #CCC;
+	background-color: #80E0B0;
+}
+
+#points_main a {
+	font-size: 20px;
+	font-weight: bold;
+}
+
+.ownername {
+	color: #990000;
 }

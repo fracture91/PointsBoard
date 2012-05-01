@@ -3,7 +3,7 @@
 	width: 960px;
 	margin: 0 auto;
 	border: 1px solid #333;
-	background: #CCC;
+	background: #80E0B0;
 }
 
 .clear {
@@ -36,12 +36,12 @@ form {
 }
 
 #reg_field, #log_field{
-	background:#008257;
+	background:#CCC;
 }
 
 #reg_leg, #log_leg{
 	border: 1px solid;
-	background:#008257;
+	background:#CCC;
 }
 
 label.username{
