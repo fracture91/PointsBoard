@@ -37,6 +37,12 @@
 				{% if not board.description == "" %}
 					<p>{{ board.description }}</p>
 				{% endif %}
+				<form method="post" action="/boards/">
+					{% csrf_token %}
+					<input type="hidden" name="delete" value="true" />
+					<input type="hidden" name="boardId" value="{{ board.id }}" />
+					<input type="submit" value="Delete" />
+				</form>
 			</li>
 		{% empty %}
 			<li>
