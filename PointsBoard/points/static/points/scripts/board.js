@@ -198,9 +198,10 @@ ControlsHandler.prototype = {
 		if(table) {
 			replaceWith(this.board.table, table);
 			//description
-			this.board.table.parentElement.previousElementSibling.textContent = table.parentElement.previousElementSibling.textContent;
+			var newDescription = table.parentNode.previousElementSibling.textContent;
+			this.board.table.parentNode.previousElementSibling.textContent = newDescription;
 			
-			var form = table.nextElementSibling.getElementsByTagName("form")[0];
+			var form = table.parentNode.nextElementSibling.getElementsByTagName("form")[0];
 			var newForm = new TransactionForm(form);
 			replaceWith(this.transForm.categoryInput, newForm.categoryInput);
 			replaceWith(this.transForm.usernameInput, newForm.usernameInput);
