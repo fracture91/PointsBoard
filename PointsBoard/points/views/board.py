@@ -62,7 +62,10 @@ def makeBoardArray(board, cats, cells):
 
 @login_required
 def board(request, boardId):
-	board = Board.objects.get(pk=boardId)
+	try:
+		board = Board.objects.get(pk=boardId)
+	except:
+		return HttpResponse(content="Board does not exist", status=404)
 	if not board.isUserAllowedToView(request.user):
 		return HttpResponse(content="You don't have permission to view this board.", status=403)
 	if request.method == 'POST':

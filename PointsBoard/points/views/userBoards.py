@@ -20,6 +20,14 @@ def userBoards(request):
 				return redirect(reverse("board", args=[board.id]))
 			except ValidationError, e:
 				feedback = "Error creating board: " + str(e.message_dict)
+		if "delete" in request.POST and "boardId" in request.POST:
+			try:
+				board = Board.objects.get(pk=int(request.POST["boardId"]))
+			except:
+				return HttpResponse(content="Board not found.", status=404)
+			if board.owner != request.user:
+				return HttpResponse(content="You cannot delete a board you do not own", status=403)
+			board.delete()
 		else:
 			return HttpResponse(status=400)
 	elif request.method != "GET":
