@@ -42,14 +42,19 @@ def getCells(boardId):
 			cellDict[cell.user.username][cat.name] = cell
 	return cellDict
 
-def makeBoardArray(cats, cells):
+def makeBoardArray(board, cats, cells):
 	boardArray = []
 	boardArray.insert(0, cats)
 	boardArray[0].insert(0, "") #empty string for top-left corner
 	boardIdx = 0
-	for username, userCells in cells.iteritems():
+	users = board.participants.all()
+	for user in users:
+		if user.username in cells:
+			userCells = cells[user.username]
+		else:
+			userCells = {}
 		boardIdx += 1
-		boardArray.append([username])
+		boardArray.append([user.username])
 		for cat in cats:
 			if cat != "":
 				boardArray[boardIdx].append(userCells[cat].points)
@@ -106,7 +111,7 @@ def board(request, boardId):
 	transactions = getTransStr(request, board)
 	cats = getCats(boardId)
 	cells = getCells(boardId)
-	boardArray = makeBoardArray(cats, cells)
+	boardArray = makeBoardArray(board, cats, cells)
 	context = RequestContext(request,
 							{"board":board, "transactions":transactions, "cats":cats, "cells":cells, "boardArray":boardArray})
 	return HttpResponse(template.render(context))
