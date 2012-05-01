@@ -9,6 +9,9 @@ import datetime
 from points.views.comment import getAllComments
 
 def renderSingleTransaction(request, transaction):
+	"""
+	Render a single transaction to HTML.
+	"""
 	board = transaction.board
 	template = loader.get_template('points/transaction.html')
 	context = RequestContext(request, {"transaction": transaction, "board": board, "comments":getAllComments(transaction)})
@@ -16,10 +19,18 @@ def renderSingleTransaction(request, transaction):
 
 @login_required
 def transaction(request, boardId, transactionId=-1):
-	board = Board.objects.get(pk=boardId)
+	"""
+	Handle requests dealing with transactions
+	"""
+	#Check to make sure the board exists and user can access it
+	try:
+		board = Board.objects.get(pk=boardId)
+	except:
+		HttpResponse(content="Board does not exist", status=404)
 	if not board.isUserAllowedToView(request.user):
 		return HttpResponse(content="You don't have permission to view or add transactions on this board.",
 						status=403)
+	#get a transaction
 	if request.method == 'GET':
 		if transactionId != -1:
 			template = loader.get_template('points/transaction_page.html')
@@ -29,7 +40,8 @@ def transaction(request, boardId, transactionId=-1):
 				return HttpResponse(status=404, content="Transaction does not exist.")
 			context = RequestContext(request, {"transaction": transaction, "board": board, "comments":getAllComments(transaction)})
 			return HttpResponse(template.render(context))
-		return HttpResponse(status=405)
+		else:
+			return HttpResponse(status=405, content="You must provide a transaction id")
 	elif request.method == 'POST':
 		#new transaction
 		if request.POST.has_key("action"):
@@ -49,6 +61,9 @@ def transaction(request, boardId, transactionId=-1):
 					recipient=rcvUser, giver=request.user, creation_date=datetime.datetime.now())
 			trans.full_clean()
 			trans.save()
+		#delete existing transaction
+		#using POST because HTML forms do not support DELETE
+		#and we still want to allow users with NoScript to use the site
 		elif request.POST.has_key("delete"):
 			if request.user != board.owner:
 				return HttpResponse(content="You don't have permission to delete transactions on this board.",
@@ -56,6 +71,6 @@ def transaction(request, boardId, transactionId=-1):
 			try:
 				todel = Transaction.objects.get(pk=transactionId)
 			except Transaction.DoesNotExist:
-				return HttpResponse(status=404, content="Transaction does not exist")
+				return HttpResponse(content="Transaction does not exist", status=404)
 			todel.delete()
 		return redirect(reverse("board", args=[boardId]))

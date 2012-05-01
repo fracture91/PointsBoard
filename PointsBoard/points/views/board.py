@@ -7,20 +7,21 @@ from points.models import Board, Transaction, Category, Cell
 from points.views.transaction import renderSingleTransaction 
 from django.core.exceptions import ValidationError
 
-"""
-Get string containing HTML representation of all transactions for given board
-"""
+
 def getTransStr(request, board):
+	"""
+	Get string containing HTML representation of all transactions for given board
+	"""
 	transactions = Transaction.objects.filter(board=board.id)
 	alltrans = []
 	for t in transactions:
 		alltrans.append(renderSingleTransaction(request, t))
 	return "\n".join(alltrans)
 
-"""
-Returns an array of category names
-"""
 def getCats(boardId):
+	"""
+	Returns an array of category names
+	"""
 	categories = Category.objects.filter(board=boardId)
 	catArr = []
 	for cat in categories:
@@ -28,11 +29,11 @@ def getCats(boardId):
 	catArr.sort()
 	return catArr
 
-"""
-Returns a dictionary (indexed by username) of
-	dictionaries (indexed by category name) of cells for given board
-"""
 def getCells(boardId):
+	"""
+	Returns a dictionary (indexed by username) of
+		dictionaries (indexed by category name) of cells for given board
+	"""
 	categories = Category.objects.filter(board=boardId)
 	cellDict = {}
 	for cat in categories:
@@ -44,6 +45,9 @@ def getCells(boardId):
 	return cellDict
 
 def makeBoardArray(board, cats, cells):
+	"""
+	Make a 2-dimensional array which represents the cells of the board.
+	"""
 	boardArray = []
 	boardArray.insert(0, cats)
 	boardArray[0].insert(0, "") #empty string for top-left corner
@@ -71,7 +75,9 @@ def board(request, boardId):
 		return HttpResponse(content="You don't have permission to view this board.", status=403)
 	if request.method == 'POST':
 		#ensure current user is board owner
-		if board.owner.id == request.user.id:
+		if board.owner != request.user:
+			return HttpResponse("You do not have permission to modify this board.", status=403)
+		else:
 			#change description
 			if request.POST.has_key("newDescription"):
 				board.description = request.POST["newDescription"]
@@ -114,6 +120,7 @@ def board(request, boardId):
 				board.save()
 			else:
 				return HttpResponse(status=400)
+	#display board page no matter what type of request we received
 	template = loader.get_template('points/board.html')
 	transactions = getTransStr(request, board)
 	cats = getCats(boardId)

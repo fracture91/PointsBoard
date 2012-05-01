@@ -5,14 +5,23 @@ from django.http import HttpResponse
 from points.models import MinComment, Transaction, Board
 
 def commentTextToHtml(commentText):
+	"""
+	Convert the text that's stored in the db to something we can display.
+	"""
 	return commentText.replace("<", "&lt;").replace(">", "&gt;").replace("\n", "<br />")
 
 def singleComment(comment):
+	"""
+	get the HTML for a single comment.
+	"""
 	template = loader.get_template('points/comment.html')
 	context = Context({"comment":comment, "commentText":commentTextToHtml(comment.comment)})
 	return template.render(context)
 
 def getAllComments(trans):
+	"""
+	get the HTML for all comments for a transaction
+	"""
 	comments = trans.comments.all()
 	responseText = ""
 	for comment in comments:
