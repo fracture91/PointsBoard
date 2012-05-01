@@ -3,3 +3,11 @@
 body{
 	background:#008257;
 }
+
+a:link,a:hover{
+	color:#006644;
+}
+
+a:visited{
+	color:#006A80;
+}
