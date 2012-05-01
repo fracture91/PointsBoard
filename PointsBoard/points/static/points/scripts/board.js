@@ -1,6 +1,16 @@
 "use strict";
 
 /**
+ * Replace the contents of target with the contents of source.
+ */
+function replaceWith(target, source) {
+	target.innerHTML = "";
+	while(source.children.length > 0) {
+		target.appendChild(source.firstElementChild);
+	}
+}
+
+/**
  * Holds information about a cell in a Board.
  * 
  * @param el The TD element
@@ -20,7 +30,6 @@ function Cell(el, category, username) {
  */
 function Board(table) {
 	this.table = table;
-	this.head = this.table.getElementsByTagName("thead")[0];
 }
 
 Board.prototype = {
@@ -47,7 +56,10 @@ Board.prototype = {
 		return null;
 	},
 	getCategory: function(index) {
-		return this.trim(this.head.getElementsByTagName("th")[index].textContent);
+		return this.trim(this.getHead().getElementsByTagName("th")[index].textContent);
+	},
+	getHead: function() {
+		return this.table.getElementsByTagName("thead")[0];
 	}
 }
 
@@ -61,6 +73,7 @@ function TransactionForm(form) {
 	this.pointsInput = this.form["numPts"];
 	this.categoryInput = this.form["category"];
 	this.usernameInput = this.form["rcvUser"];
+	this.reasonInput = this.form["reason"];
 }
 
 TransactionForm.prototype = {
@@ -97,9 +110,121 @@ Filler.prototype = {
 	}
 }
 
+
+/**
+ * Handles XHRs for an Ajaxer on the transaction form.
+ * Adds new transactions and updates the board.
+ * 
+ * @param board A Board instance to update
+ * @param transForm A TransactionForm instance
+ */
+function TransactionHandler(board, transForm) {
+	this.board = board;
+	this.transForm = transForm;
+	this.container = this.transForm.form.parentNode;
+	this.form = this.transForm.form;
+}
+
+TransactionHandler.prototype = {
+	ajaxerAfterSend: function(e, xhr) {
+		var p = document.createElement("p");
+		p.className = "feedback";
+		p.textContent = "Submitting...";
+		this.form.appendChild(p);
+	},
+	ajaxerValidate: function(e) {
+		if(this.transForm.reasonInput.value == "") {
+			throw "You must input a reason for the transaction.";
+		}
+		if(this.transForm.categoryInput.value == "") {
+			throw "You must choose a category.";
+		}
+		if(this.transForm.usernameInput.value == "") {
+			throw "You must choose a username."
+		}
+	},
+	ajaxerShowError: function(errStr) {
+		alert(errStr);
+	},
+	ajaxerOnSuccess: function(xhr) {
+		var newBody = xhr.ajaxer.parseBody(xhr.responseText);
+		var transactions = newBody.getElementsByClassName("transaction");
+		var numToAdd = transactions.length - document.getElementsByClassName("transaction").length;
+		transactions = Array.prototype.slice.call(transactions, 0, numToAdd);
+		var insertAfterMe = this.container;
+		transactions.forEach(function(trans) {
+			insertAfterMe.parentNode.insertBefore(trans, insertAfterMe.nextSibling);
+			insertAfterMe = trans;
+		});
+		replaceWith(this.board.table, newBody.getElementsByTagName("table")[0]);
+	},
+	ajaxerXHRLoadEnd: function(xhr) {
+		var p = this.container.getElementsByClassName("feedback")[0];
+		p.parentNode.removeChild(p);
+	}
+}
+
+
+/**
+ * Handles XHRs for an Ajaxer on the Owner Controls forms.
+ * 
+ * @param board A Board instance to update
+ * @param form The form element to get input from
+ */
+function ControlsHandler(board, form, transForm) {
+	this.board = board;
+	this.form = form;
+	this.transForm = transForm;
+}
+
+ControlsHandler.prototype = {
+	ajaxerAfterSend: function(e, xhr) {
+		var p = document.createElement("p");
+		p.className = "feedback";
+		p.textContent = "Submitting...";
+		this.form.parentNode.insertBefore(p, this.form.nextSibling);
+	},
+	ajaxerValidate: function(e) {
+		if(this.form.getElementsByTagName("input")[1].value == "") {
+			throw "You cannot leave the field blank.";
+		}
+	},
+	ajaxerShowError: function(errStr) {
+		alert(errStr);
+	},
+	ajaxerOnSuccess: function(xhr) {
+		var newBody = xhr.ajaxer.parseBody(xhr.responseText);
+		var table = newBody.getElementsByTagName("table")[0];
+		if(table) {
+			replaceWith(this.board.table, table);
+			//description
+			this.board.table.previousElementSibling.textContent = table.previousElementSibling.textContent;
+			
+			var form = table.nextElementSibling.getElementsByTagName("form")[0];
+			var newForm = new TransactionForm(form);
+			replaceWith(this.transForm.categoryInput, newForm.categoryInput);
+			replaceWith(this.transForm.usernameInput, newForm.usernameInput);
+		}
+	},
+	ajaxerXHRLoadEnd: function(xhr) {
+		var p = this.form.nextSibling;
+		if(p.classList.contains("feedback")) {
+			p.parentNode.removeChild(p);
+		}
+	}
+}
+
 window.addEventListener("load", function(e) {
 	window.board = new Board(document.getElementById("board"));
 	window.transForm = new TransactionForm(document.getElementById("newtransaction")
 			.getElementsByTagName("form")[0]);
-	window.filler = new Filler(board, transForm); 
+	window.filler = new Filler(board, transForm);
+	
+	window.transactionAjax = new Ajaxer(new TransactionHandler(board, transForm));
+	
+	var forms = document.getElementById("owner_controls").getElementsByTagName("form");
+	window.ownerControlsAjax = [];
+	for(var i = 0; i < forms.length; i++) {
+		ownerControlsAjax.push(new Ajaxer(new ControlsHandler(board, forms[i], transForm)));
+	}
 })

@@ -1,5 +1,7 @@
 from django.template import RequestContext, loader
 from django.http import HttpResponse
+from django.shortcuts import redirect
+from django.core.urlresolvers import reverse
 from points.models import Board, Category, Transaction
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
@@ -56,6 +58,4 @@ def transaction(request, boardId, transactionId=-1):
 			except Transaction.DoesNotExist:
 				return HttpResponse(status=404, content="Transaction does not exist")
 			todel.delete()
-		response = HttpResponse()
-		response['Refresh'] = "0; url=/boards/"+str(boardId)
-		return response
+		return redirect(reverse("board", args=[boardId]))
